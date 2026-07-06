@@ -1,0 +1,646 @@
+/* =============================================
+   DASHBOARD V2 PAGE (Matches UI Design Spec)
+   ============================================= */
+
+.dash-v2-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ─── Header ────────────────────────────── */
+.dash-v2-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dash-v2-title {
+  font-family: 'Oswald', 'Inter', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--dash-text);
+}
+
+.dash-v2-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  color: var(--dash-text-muted);
+  margin: 0;
+}
+
+/* ─── KPI Grid ──────────────────────────── */
+.dash-v2-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.dash-v2-kpi-card {
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 22px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 35px rgba(0,0,0,.05);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.dash-v2-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 45px rgba(0,0,0,.08);
+}
+
+.dark-theme .dash-v2-kpi-card {
+  box-shadow: 0 10px 30px rgba(0,0,0,.45);
+}
+
+.dash-v2-kpi-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.dash-v2-kpi-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 1;
+}
+
+.dash-v2-kpi-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dash-text-muted);
+}
+
+.dash-v2-kpi-value {
+  font-family: 'Oswald', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--dash-text);
+  line-height: 1.2;
+}
+
+.dash-v2-kpi-delta {
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.dash-v2-mini-chart {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 80px;
+  height: 24px;
+}
+
+.dash-v2-mini-chart svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ─── Main Content Layout ───────────────── */
+.dash-v2-content {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.dash-v2-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dash-v2-right {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dash-v2-row-charts {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr;
+  gap: 20px;
+}
+
+/* ─── Generic Cards ─────────────────────── */
+.dash-v2-card {
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 12px 35px rgba(0,0,0,.05);
+}
+
+.dark-theme .dash-v2-card {
+  box-shadow: 0 10px 30px rgba(0,0,0,.45);
+}
+
+.dash-v2-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.dash-v2-card-header h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--dash-text);
+}
+
+.dash-v2-select {
+  background: var(--dash-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 12px;
+  padding: 6px 12px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  color: var(--dash-text);
+  cursor: pointer;
+}
+
+.dash-v2-link {
+  font-size: 12px;
+  font-family: 'Poppins', sans-serif;
+  color: #FF6B00;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* ─── Activity Chart ────────────────────── */
+.dash-chart-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.dash-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--dash-text-muted);
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dash-chart-container {
+  flex: 1;
+  min-height: 250px;
+  position: relative;
+}
+
+.dash-chart-hover-stats {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10;
+  pointer-events: none;
+  /* Normally hidden/toggled by D3/Recharts hover, mocked as visible in spec */
+}
+
+.dash-chart-hover-stats strong {
+  font-size: 11px;
+  color: var(--dash-text);
+  margin-bottom: 4px;
+  display: block;
+}
+
+.dash-chart-hover-stats div {
+  font-size: 10px;
+  color: var(--dash-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dash-chart-hover-stats span:last-child {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--dash-text);
+  padding-left: 12px;
+}
+
+/* ─── Actions Grid ──────────────────────── */
+.dash-actions-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  flex: 1;
+}
+
+.dash-action-btn {
+  background: var(--dash-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 16px;
+  padding: 16px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 200ms ease;
+}
+
+.dash-action-btn:hover {
+  border-color: #FACC15;
+  background: rgba(250,204,21,.04);
+}
+
+.dash-action-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.dash-action-btn span {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--dash-text);
+  line-height: 1.3;
+}
+
+/* ─── Recent Docs Table ─────────────────── */
+.dash-v2-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Poppins', sans-serif;
+}
+
+.dash-v2-table th {
+  text-align: left;
+  padding: 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--dash-text-muted);
+  border-bottom: 1px solid var(--dash-border);
+}
+
+.dash-v2-table td {
+  padding: 12px 10px;
+  font-size: 12px;
+  color: var(--dash-text);
+  border-bottom: 1px solid var(--dash-border);
+  vertical-align: middle;
+}
+
+.dash-v2-table tbody tr {
+  cursor: pointer;
+  transition: background 200ms;
+}
+
+.dash-v2-table tbody tr:hover {
+  background: rgba(250,204,21,.04);
+}
+
+.dash-cell-nom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dash-type-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.dash-doc-name {
+  font-weight: 600;
+}
+
+.dash-cat-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid;
+  font-size: 10px;
+  background: transparent;
+}
+
+.dash-cell-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dash-cell-user img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.dash-txt-muted {
+  color: var(--dash-text-muted);
+}
+
+.dash-more-btn {
+  background: transparent;
+  border: none;
+  color: var(--dash-text-muted);
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.dash-more-btn:hover {
+  background: var(--dash-bg);
+  color: var(--dash-text);
+}
+
+/* ─── Calendar ──────────────────────────── */
+.dash-cal-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.dash-cal-controls button {
+  background: var(--dash-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  color: var(--dash-text-muted);
+  cursor: pointer;
+}
+
+.dash-cal-controls button:hover {
+  color: var(--dash-text);
+}
+
+.dash-cal-month-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 0 10px;
+}
+
+.dash-cal-month-title button {
+  background: none;
+  border: none;
+  color: var(--dash-text-muted);
+  cursor: pointer;
+}
+
+.dash-cal-month-title strong {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  color: var(--dash-text);
+}
+
+.dash-cal-grid {
+  font-family: 'Poppins', sans-serif;
+  margin-bottom: 24px;
+}
+
+.dash-cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.dash-cal-days span {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--dash-text-muted);
+}
+
+.dash-cal-dates {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px 0;
+  text-align: center;
+}
+
+.dash-cal-dates span {
+  font-size: 12px;
+  color: var(--dash-text);
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  border-radius: 50%;
+  position: relative;
+}
+
+.dash-cal-dates span.muted {
+  color: var(--dash-border);
+}
+
+.dash-cal-dates span.active {
+  background: #FACC15;
+  color: #111;
+  font-weight: 600;
+}
+
+.dash-cal-dates span.has-event::after {
+  content: '';
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background: #FF6B00;
+  border-radius: 50%;
+}
+
+.dash-cal-empty {
+  background: var(--dash-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dash-cal-empty-icon {
+  width: 44px;
+  height: 44px;
+  background: #FFEDD5;
+  color: #D97706;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+}
+
+.dash-cal-empty-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-cal-empty-text strong {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: var(--dash-text);
+}
+
+.dash-cal-empty-text span {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  color: var(--dash-text-muted);
+}
+
+/* ─── Timeline (Recent Activities) ──────── */
+.dash-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dash-timeline-item {
+  display: flex;
+  gap: 16px;
+}
+
+.dash-tl-icon-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dash-tl-line {
+  position: absolute;
+  top: 32px;
+  bottom: -16px;
+  width: 1px;
+  background: var(--dash-border);
+  z-index: 0;
+}
+
+.dash-timeline-item:last-child .dash-tl-line {
+  display: none;
+}
+
+.dash-tl-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+}
+
+.dash-tl-content {
+  flex: 1;
+  padding-top: 4px;
+  padding-bottom: 8px;
+}
+
+.dash-tl-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.dash-tl-title strong {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: var(--dash-text);
+}
+
+.dash-tl-title span {
+  font-size: 10px;
+  color: var(--dash-text-muted);
+}
+
+.dash-tl-content p {
+  font-size: 11px;
+  color: var(--dash-text-muted);
+  margin: 0;
+}
+
+/* Responsive Overrides */
+@media (max-width: 1400px) {
+  .dash-v2-kpi-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1200px) {
+  .dash-v2-content {
+    flex-direction: column;
+  }
+  .dash-v2-right {
+    width: 100%;
+    flex-direction: row;
+  }
+  .dash-v2-right > * {
+    flex: 1;
+  }
+  .dash-v2-kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .dash-v2-row-charts {
+    grid-template-columns: 1fr;
+  }
+  .dash-v2-right {
+    flex-direction: column;
+  }
+  .dash-v2-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

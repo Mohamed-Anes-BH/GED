@@ -1,0 +1,588 @@
+/* =============================================
+   COURRIERS SORTANTS PAGE
+   ============================================= */
+
+.cs-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  padding-bottom: 80px; /* Space for the bottom action bar */
+}
+
+/* ─── Header ────────────────────────────── */
+.cs-header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cs-page-title {
+  font-family: 'Oswald', 'Inter', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--dash-text);
+}
+
+.cs-page-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  color: var(--dash-text-muted);
+  margin: 0;
+}
+
+.cs-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--dash-text-muted);
+  font-family: 'Poppins', sans-serif;
+  margin-top: 4px;
+}
+
+.cs-bc-active {
+  font-weight: 600;
+  color: var(--dash-text);
+}
+
+/* ─── KPI Row ────────────────────────────── */
+.cs-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+
+.cs-kpi-card {
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 22px;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  box-shadow: 0 12px 35px rgba(0,0,0,.05);
+  transition: box-shadow 200ms ease-in-out, transform 200ms ease-in-out;
+}
+
+.dark-theme .cs-kpi-card {
+  box-shadow: 0 10px 30px rgba(0,0,0,.45);
+}
+
+.cs-kpi-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.cs-kpi-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cs-kpi-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  color: var(--dash-text-muted);
+  font-weight: 600;
+}
+
+.cs-kpi-value {
+  font-family: 'Oswald', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--dash-text);
+  line-height: 1.1;
+}
+
+.cs-kpi-subtitle {
+  font-size: 10px;
+  color: var(--dash-text-muted);
+}
+
+.cs-kpi-delta {
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* ─── Main Layout structure ─────────────── */
+.cs-main-layout {
+  display: flex;
+  gap: 20px;
+  align-items: start;
+}
+
+.cs-table-column {
+  flex: 3;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cs-filters-column {
+  flex: 1;
+  min-width: 260px;
+  max-width: 300px;
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 12px 35px rgba(0,0,0,.05);
+  position: sticky;
+  top: 20px;
+}
+
+.cs-preview-column {
+  flex: 1;
+  min-width: 260px;
+  max-width: 320px;
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 12px 35px rgba(0,0,0,.05);
+  position: sticky;
+  top: 20px;
+}
+
+/* ─── Table Controls ────────────────────── */
+.cs-table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cs-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 14px;
+  padding: 10px 16px;
+  width: 300px;
+}
+
+.cs-search-box input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  color: var(--dash-text);
+}
+
+.cs-search-filter-icon {
+  color: var(--dash-text-muted);
+  cursor: pointer;
+}
+
+.cs-table-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cs-export-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--dash-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dash-text);
+  cursor: pointer;
+}
+
+.cs-primary-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FF6B00;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: all 200ms ease-in-out;
+  box-shadow: 0 4px 12px rgba(255,107,0,.25);
+}
+
+.cs-primary-btn:hover {
+  background: #E65D00;
+  transform: translateY(-1px);
+}
+
+/* ─── Table ──────────────────────────────── */
+.cs-table-wrapper {
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 22px;
+  overflow-x: auto;
+  box-shadow: 0 12px 35px rgba(0,0,0,.05);
+}
+
+.dark-theme .cs-table-wrapper,
+.dark-theme .cs-filters-column,
+.dark-theme .cs-preview-column {
+  box-shadow: 0 10px 30px rgba(0,0,0,.45);
+}
+
+.cs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Poppins', sans-serif;
+  min-width: 1000px;
+}
+
+.cs-table thead { border-bottom: 1px solid var(--dash-border); }
+.cs-table th {
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dash-text-muted);
+}
+.cs-table td {
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--dash-text);
+  border-bottom: 1px solid var(--dash-border);
+}
+.cs-table tbody tr { transition: background 200ms; cursor: pointer; }
+.cs-table tbody tr:hover { background: rgba(250,204,21,.04); }
+.cs-table tbody tr.selected { background: rgba(250,204,21,.08); }
+.dark-theme .cs-table tbody tr:hover { background: rgba(250,204,21,.05); }
+
+.cs-txt-bold { font-weight: 500; }
+.cs-txt-muted { color: var(--dash-text-muted); }
+.cs-objet-cell {
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cs-badge-outline {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: transparent;
+  border: 1px solid;
+}
+
+.cs-badge-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.cs-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.cs-badge-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border: 1px solid var(--dash-border);
+  border-radius: 12px;
+  font-size: 11px;
+}
+
+.cs-wf-ring {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 3px solid;
+}
+
+.cs-icon-btn {
+  background: none;
+  border: none;
+  color: var(--dash-text-muted);
+  cursor: pointer;
+}
+
+/* Pagination */
+.cs-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  color: var(--dash-text-muted);
+}
+.cs-pager {
+  display: flex;
+  gap: 4px;
+}
+.cs-pager button {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--dash-border);
+  background: var(--dash-card-bg);
+  color: var(--dash-text);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.cs-pager button.active {
+  background: var(--dash-highlight);
+  border-color: var(--dash-highlight);
+  color: #111;
+}
+
+/* ─── Filters Column ────────────────────── */
+.cs-filters-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.cs-filters-header h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  margin: 0;
+  color: var(--dash-text);
+}
+.cs-reset-btn {
+  border: none;
+  background: none;
+  color: #FF6B00;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cs-filters-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.cs-filter-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cs-filter-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--dash-text-muted);
+}
+
+.cs-select, .cs-input-with-icon {
+  background: var(--dash-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--dash-text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cs-date-inputs {
+  display: flex;
+  gap: 8px;
+}
+.cs-date-inputs input {
+  width: 100%;
+}
+
+.cs-toggle-filter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+.cs-toggle-filter label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--dash-text);
+}
+.cs-switch {
+  width: 32px;
+  height: 18px;
+  border-radius: 10px;
+  background: #E5E7EB;
+  position: relative;
+}
+
+.cs-apply-filters-btn {
+  width: 100%;
+  background: #FF6B00;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ─── Preview Column ────────────────────── */
+.cs-preview-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.cs-preview-header h3 {
+  font-size: 15px;
+  margin: 0;
+  color: var(--dash-text);
+}
+.cs-badge-active {
+  background: #DCFCE7;
+  color: #16A34A;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.cs-doc-graphic {
+  height: 140px;
+  background: var(--dash-bg);
+  border-radius: 16px;
+  margin-bottom: 20px;
+  display: grid;
+  place-items: center;
+  color: var(--dash-text-muted);
+  font-size: 12px;
+}
+
+.cs-preview-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.cs-preview-title-row h4 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--dash-text);
+}
+
+.cs-preview-table {
+  width: 100%;
+  font-size: 11px;
+  border-collapse: separate;
+  border-spacing: 0 10px;
+}
+.cs-preview-table td:first-child {
+  color: var(--dash-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cs-preview-table td:last-child {
+  font-weight: 500;
+  color: var(--dash-text);
+  text-align: right;
+}
+
+.cs-secondary-btn-full {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid #FF6B00;
+  color: #FF6B00;
+  border-radius: 12px;
+  margin-top: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ─── Bottom Panels ─────────────────────── */
+.cs-bottom-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.cs-detail-box {
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 16px;
+  padding: 16px;
+  height: 100px;
+}
+.cs-box-title {
+  margin: 0;
+  font-size: 13px;
+  color: var(--dash-text);
+}
+
+/* ─── Action Bar ────────────────────────── */
+.cs-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 250px; /* Sidebar offset */
+  right: 0;
+  background: var(--dash-card-bg);
+  border-top: 1px solid var(--dash-border);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 -4px 20px rgba(0,0,0,.05);
+  z-index: 100;
+}
+
+.dark-theme .cs-action-bar {
+  box-shadow: 0 -4px 20px rgba(0,0,0,.3);
+}
+
+.cs-action-btn {
+  background: var(--dash-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--dash-text);
+  cursor: pointer;
+}
+
+.cs-danger-btn {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #EF4444;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}

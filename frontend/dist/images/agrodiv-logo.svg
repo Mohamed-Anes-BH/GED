@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 80" fill="none">
+  <!-- Gear/cog shape -->
+  <g transform="translate(88, 4)">
+    <!-- Outer gear teeth -->
+    <path d="M36 0 L40 0 L42 6 L46 5 L48 0 L52 2 L50 8 L54 10 L57 5 L60 8 L56 13 L59 16 L64 13 L66 17 L61 20 L62 24 L68 24 L68 28 L62 30 L61 34 L66 36 L64 40 L59 38 L56 41 L60 46 L57 48 L54 44 L50 46 L52 52 L48 53 L46 48 L42 49 L40 54 L36 54 L34 48 L30 49 L28 53 L24 52 L26 46 L22 44 L19 48 L16 46 L20 41 L17 38 L12 40 L10 36 L15 34 L14 30 L8 28 L8 24 L14 24 L15 20 L10 17 L12 13 L17 16 L20 13 L16 8 L19 5 L22 10 L26 8 L24 2 L28 0 L30 5 L34 6 Z" fill="#4A4A4A" stroke="#3A3A3A" stroke-width="0.5"/>
+    <!-- Inner circle with landscape -->
+    <circle cx="38" cy="27" r="16" fill="#F5EBD5"/>
+    <!-- Hills/landscape -->
+    <path d="M22 35 Q30 22 38 30 Q46 22 54 35 Z" fill="#4CAF50" opacity="0.7"/>
+    <path d="M22 35 Q28 28 34 33 Q40 28 46 33 Q50 28 54 35 Z" fill="#2E7D32" opacity="0.8"/>
+    <!-- Water waves -->
+    <path d="M24 36 Q31 33 38 36 Q45 33 52 36" stroke="#1E88E5" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M26 38 Q33 35 38 38 Q43 35 50 38" stroke="#42A5F5" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    <!-- Sun -->
+    <circle cx="44" cy="18" r="3.5" fill="#FFA726"/>
+  </g>
+  <!-- Text: Agr -->
+  <text x="2" y="52" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="42" fill="#333333">Agr</text>
+  <!-- Text: div -->
+  <text x="152" y="52" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="42" fill="#333333">div</text>
+  <!-- Arabic text -->
+  <text x="80" y="74" font-family="Arial, sans-serif" font-weight="700" font-size="16" fill="#555555" text-anchor="middle" direction="rtl" >أفروديف</text>
+</svg>

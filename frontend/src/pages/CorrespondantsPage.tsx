@@ -1,0 +1,41 @@
+import { Users, Search, Plus, Edit2, Trash2 } from 'lucide-react';
+
+export function CorrespondantsPage() {
+  const items = [
+    { code: 'COR-01', nom: 'Ministère de l\'Agriculture', type: 'Institutionnel', docs: 1245 },
+    { code: 'COR-02', nom: 'Fournisseur XYZ', type: 'Privé', docs: 890 },
+    { code: 'COR-03', nom: 'Banque BNA', type: 'Institutionnel', docs: 450 },
+  ];
+
+  return (
+    <div className="flex flex-col gap-6 font-poppins pb-10 text-gray-800 h-[calc(100vh-140px)]">
+      <div className="flex items-start gap-4">
+        <div className="w-14 h-14 bg-teal-50 border border-teal-100 rounded-2xl flex items-center justify-center shadow-sm shrink-0">
+          <Users size={26} className="text-teal-500" />
+        </div>
+        <div>
+          <h2 className="text-3xl font-bold font-oswald text-gray-900">Correspondants</h2>
+          <div className="flex items-center gap-1 text-[11px] font-medium text-gray-400 mt-0.5">
+            <span>Accueil</span> <span>›</span> <span className="text-orange-500 font-semibold">Correspondants</span>
+          </div>
+        </div>
+      </div>
+      
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden flex flex-col flex-1">
+        <div className="p-4 border-b border-gray-100 flex gap-4">
+           <div className="flex-1 flex items-center gap-2 border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 focus-within:bg-white transition-colors">
+              <Search size={16} className="text-gray-400"/>
+              <input className="flex-1 outline-none text-xs bg-transparent" placeholder="Rechercher..." />
+           </div>
+           <button className="flex items-center gap-2 px-5 py-2.5 bg-yellow-400 text-gray-900 font-bold text-xs rounded-xl hover:bg-yellow-500">
+             <Plus size={15}/> Nouveau
+           </button>
+        </div>
+        <table className="w-full text-left text-[12px] whitespace-nowrap">
+          <thead><tr className="bg-gray-50 border-b border-gray-100 text-gray-500 font-bold"><th className="py-3 px-5">Code</th><th className="py-3 px-5">Nom</th><th className="py-3 px-5">Type</th><th className="py-3 px-5">Documents</th><th className="py-3 px-5 text-right">Actions</th></tr></thead>
+          <tbody>{items.map(d=><tr key={d.code} className="border-b border-gray-50 hover:bg-gray-50/50"><td className="py-3 px-5 font-semibold text-teal-600">{d.code}</td><td className="py-3 px-5 font-bold text-gray-800">{d.nom}</td><td className="py-3 px-5">{d.type}</td><td className="py-3 px-5">{d.docs}</td><td className="py-3 px-5 text-right flex justify-end gap-2"><button className="p-1 hover:text-orange-500"><Edit2 size={14}/></button><button className="p-1 hover:text-red-500"><Trash2 size={14}/></button></td></tr>)}</tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
