@@ -1,24 +1,30 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.parsers import MultiPartParser, FormParser
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 
 from .models import Role, Permission
 from .serializers import (
     UserSerializer, UserCreateUpdateSerializer, 
     RoleSerializer, PermissionSerializer
 )
+from .services import activate_user, assign_role, create_role_permission
 
 User = get_user_model()
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        """Only admins/staff can list all users or delete. Regular users access own profile via /profile/."""
+        if self.action in ['list', 'create', 'destroy']:
+            return [IsAdminUser()]
+        return [IsAuthenticated()]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['department', 'service', 'role', 'is_active']
     search_fields = ['first_name', 'last_name', 'email']
@@ -34,8 +40,7 @@ class UserViewSet(viewsets.ModelViewSet):
         """Activer/Désactiver un utilisateur"""
         user = self.get_object()
         is_active = request.data.get('is_active', not user.is_active)
-        user.is_active = bool(is_active)
-        user.save(update_fields=['is_active'])
+        activate_user(user, active=bool(is_active), actor=request.user)
         return Response({'status': 'success', 'is_active': user.is_active})
 
     @action(detail=False, methods=['get', 'put', 'patch'])
@@ -48,7 +53,7 @@ class UserViewSet(viewsets.ModelViewSet):
         
         serializer = UserCreateUpdateSerializer(user, data=request.data, partial=True, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        updated_user = serializer.save()
         return Response(UserSerializer(user, context={'request': request}).data)
 
     @action(detail=False, methods=['post'], parser_classes=[MultiPartParser, FormParser])
@@ -92,14 +97,17 @@ class RoleViewSet(viewsets.ModelViewSet):
                 perm, created = Permission.objects.get_or_create(role=role, resource=resource)
                 
                 # Update specific fields
-                perm.can_create = item.get('can_create', perm.can_create)
-                perm.can_read = item.get('can_read', perm.can_read)
-                perm.can_update = item.get('can_update', perm.can_update)
-                perm.can_delete = item.get('can_delete', perm.can_delete)
-                perm.can_download = item.get('can_download', perm.can_download)
-                perm.can_share = item.get('can_share', perm.can_share)
-                perm.can_approve = item.get('can_approve', perm.can_approve)
-                perm.save()
+                perm = create_role_permission(
+                    role,
+                    resource,
+                    can_create=item.get('can_create', perm.can_create),
+                    can_read=item.get('can_read', perm.can_read),
+                    can_update=item.get('can_update', perm.can_update),
+                    can_delete=item.get('can_delete', perm.can_delete),
+                    can_download=item.get('can_download', perm.can_download),
+                    can_share=item.get('can_share', perm.can_share),
+                    can_approve=item.get('can_approve', perm.can_approve),
+                )
                 result.append(perm)
                 
             return Response(PermissionSerializer(result, many=True).data)

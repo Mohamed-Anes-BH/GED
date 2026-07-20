@@ -1,0 +1,20 @@
+=== SUPER ADMIN ===
+Email: admin@agrodiv.dz
+Mot de passe: admin123
+
+Email: sofiane.hamidi@agrodiv.dz
+Mot de passe: password123
+
+=== MANAGERS ===
+Email: m.benali@agrodiv.dz
+Mot de passe: password123
+
+Email: y.elamrani@agrodiv.dz
+Mot de passe: password123
+
+=== EMPLOYÉS ===
+Email: k.lahbabi@agrodiv.dz
+Mot de passe: password123
+
+Email: t.ziani@agrodiv.dz
+Mot de passe: password123

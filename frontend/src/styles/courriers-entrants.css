@@ -744,3 +744,98 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* ─── Courrier Creation Form Styles ─── */
+.ce-form-card {
+  background: var(--dash-card-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 12px 35px rgba(0,0,0,.05);
+}
+.dark-theme .ce-form-card {
+  box-shadow: 0 10px 30px rgba(0,0,0,.45);
+}
+.ce-form-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.ce-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ce-form-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dash-text-muted);
+}
+.ce-form-req {
+  color: #EF4444;
+  margin-left: 2px;
+}
+.ce-form-field input, .ce-form-field select, .ce-form-field textarea {
+  background: var(--dash-bg);
+  border: 1px solid var(--dash-border);
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--dash-text);
+  outline: none;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 200ms;
+}
+.ce-form-field input:focus, .ce-form-field select:focus, .ce-form-field textarea:focus {
+  border-color: var(--dash-highlight);
+}
+.ce-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+.ce-btn-save {
+  background: #FF6B00;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: all 200ms;
+}
+.ce-btn-save:hover {
+  background: #E65D00;
+  transform: translateY(-1px);
+}
+.ce-btn-cancel {
+  background: var(--dash-card-bg);
+  color: var(--dash-text);
+  border: 1px solid var(--dash-border);
+  border-radius: 14px;
+  padding: 12px 24px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: all 200ms;
+}
+.ce-btn-cancel:hover {
+  border-color: var(--dash-highlight);
+  background: rgba(250,204,21,.05);
+}
+.ce-file-dropzone {
+  border: 2px dashed var(--dash-border);
+  border-radius: 14px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 200ms;
+  background: var(--dash-bg);
+}
+.ce-file-dropzone:hover {
+  border-color: var(--dash-highlight);
+}
+

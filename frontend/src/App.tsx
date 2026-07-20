@@ -18,18 +18,21 @@ import { SettingsPage } from './pages/SettingsPage';
 import { AProposPage } from './pages/AProposPage';
 import { ArchivesPhysiquesPage } from './pages/ArchivesPhysiquesPage';
 import { BoitesArchivesPage } from './pages/BoitesArchivesPage';
+import { PhysicalLocationsPage } from './pages/PhysicalLocationsPage';
 import { CategoriesPage } from './pages/CategoriesPage';
 import { CorbeillePage } from './pages/CorbeillePage';
 import { CorrespondantsPage } from './pages/CorrespondantsPage';
 import { CourriersEntrantsPage } from './pages/CourriersEntrantsPage';
 import { CourriersSortantsPage } from './pages/CourriersSortantsPage';
+import { NouveauCourrierEntrantPage } from './pages/NouveauCourrierEntrantPage';
+import { NouveauCourrierSortantPage } from './pages/NouveauCourrierSortantPage';
 import { DepartementsPage } from './pages/DepartementsPage';
 import { DiffusionPage } from './pages/DiffusionPage';
 import { DirectionsPage } from './pages/DirectionsPage';
 import { DocumentsActifsPage } from './pages/DocumentsActifsPage';
 import { DocumentsRecentsPage } from './pages/DocumentsRecentsPage';
 import { FavorisPage } from './pages/FavorisPage';
-import { GestionDosssiersPage } from './pages/GestionDossiersPage';
+import { GestionDossiersPage } from './pages/GestionDossiersPage';
 import { HistoriqueVersionsPage } from './pages/HistoriqueVersionsPage';
 import { MessageriePage } from './pages/MessageriePage';
 import { NotificationsPage } from './pages/NotificationsPage';
@@ -55,6 +58,7 @@ const ROUTE_MAP: Record<string, string> = {
   '/a-propos': 'a-propos',
   '/archives-physiques': 'archive',
   '/boites-archives': 'boxes',
+  '/emplacements-physiques': 'emplacements-physiques',
   '/categories': 'categories',
   '/corbeille': 'trash',
   '/correspondants': 'correspondants',
@@ -102,6 +106,7 @@ function AppShellRoutes() {
       'outbox': 'courriers-sortants',
       'archive': 'archives-physiques',
       'boxes': 'boites-archives',
+      'emplacements-physiques': 'emplacements-physiques',
       'users': 'admin/users',
       'trash': 'corbeille',
       'favorites': 'favoris',
@@ -129,9 +134,11 @@ function AppShellRoutes() {
       <Route path="/visionneuse-pdf"     element={C(<VisionneusePdfPage />)} />
 
       {/* Courriers */}
-      <Route path="/courriers-entrants"      element={C(<CourriersEntrantsPage variant={1} />)} />
-      <Route path="/courriers-entrants/v2"   element={C(<CourriersEntrantsPage variant={2} />)} />
-      <Route path="/courriers-sortants"      element={C(<CourriersSortantsPage variant={1} />)} />
+      <Route path="/courriers-entrants"          element={C(<CourriersEntrantsPage variant={1} />)} />
+      <Route path="/courriers-entrants/nouveau"  element={C(<NouveauCourrierEntrantPage />)} />
+      <Route path="/courriers-entrants/v2"       element={C(<CourriersEntrantsPage variant={2} />)} />
+      <Route path="/courriers-sortants"          element={C(<CourriersSortantsPage variant={1} />)} />
+      <Route path="/courriers-sortants/nouveau"  element={C(<NouveauCourrierSortantPage />)} />
       <Route path="/courriers-sortants/v2"   element={C(<CourriersSortantsPage variant={2} />)} />
       <Route path="/courriers-sortants/v3"   element={C(<CourriersSortantsPage variant={3} />)} />
       <Route path="/diffusion"               element={C(<DiffusionPage />)} />
@@ -140,7 +147,7 @@ function AppShellRoutes() {
       <Route path="/messagerie"          element={C(<MessageriePage />)} />
 
       {/* Documents */}
-      <Route path="/dossiers"            element={C(<GestionDosssiersPage />)} />
+      <Route path="/dossiers"            element={C(<GestionDossiersPage />)} />
       <Route path="/categories"          element={C(<CategoriesPage />)} />
       <Route path="/documents-actifs"    element={C(<DocumentsActifsPage onOpenDocument={()=>{}} onNavigate={()=>{}} />)} />
       <Route path="/documents-recents"   element={C(<DocumentsRecentsPage onOpenDocument={()=>{}} onNavigate={()=>{}} />)} />
@@ -154,8 +161,9 @@ function AppShellRoutes() {
       <Route path="/ocr"                 element={C(<OcrPage />)} />
 
       {/* Archives */}
-      <Route path="/archives-physiques"  element={C(<ArchivesPhysiquesPage />)} />
-      <Route path="/boites-archives"     element={C(<BoitesArchivesPage />)} />
+      <Route path="/archives-physiques"   element={C(<ArchivesPhysiquesPage />)} />
+      <Route path="/boites-archives"      element={C(<BoitesArchivesPage />)} />
+      <Route path="/emplacements-physiques" element={C(<PhysicalLocationsPage />)} />
 
       {/* System */}
       <Route path="/notifications"       element={C(<NotificationsPage />)} />

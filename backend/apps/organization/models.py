@@ -4,67 +4,140 @@ from django.conf import settings
 User = settings.AUTH_USER_MODEL
 
 class Direction(models.Model):
-    name = models.CharField(max_length=200, verbose_name="Nom de la direction")
-    code = models.CharField(max_length=20, unique=True, verbose_name="Code court")
+    STATUS_CHOICES = [('actif', 'Actif'), ('inactif', 'Inactif')]
+    
+    code = models.CharField(max_length=50, unique=True, blank=True)
+    name = models.CharField(max_length=200)
+    manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='directions_gerees')
+    responsable = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='directions_responsable') # kept for backward compatibility if needed by old code
     description = models.TextField(null=True, blank=True)
-    responsable = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='directions_gerees')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='actif')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return f"{self.name} ({self.code})"
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = self.name[:3].upper() if self.name else 'DIR'
+        super().save(*args, **kwargs)
 
 class Departement(models.Model):
-    name = models.CharField(max_length=200, verbose_name="Nom du département")
-    code = models.CharField(max_length=20, unique=True, verbose_name="Code court")
+    STATUS_CHOICES = [('actif', 'Actif'), ('inactif', 'Inactif')]
+
+    code = models.CharField(max_length=50, unique=True, blank=True)
     direction = models.ForeignKey(Direction, on_delete=models.CASCADE, related_name='departements')
+    name = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
-    responsable = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='departements_geres')
+    manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='departements_geres')
+    responsable = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='departements_responsable')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='actif')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return f"{self.name} ({self.code})"
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = self.name[:3].upper() if self.name else 'DEP'
+        super().save(*args, **kwargs)
 
 class Service(models.Model):
-    name = models.CharField(max_length=200, verbose_name="Nom du service")
-    code = models.CharField(max_length=20, unique=True, verbose_name="Code court")
+    STATUS_CHOICES = [('actif', 'Actif'), ('inactif', 'Inactif')]
+
+    code = models.CharField(max_length=50, unique=True, blank=True)
     departement = models.ForeignKey(Departement, on_delete=models.CASCADE, related_name='services')
+    name = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
-    responsable = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='services_geres')
+    manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='services_geres')
+    responsable = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='services_responsable')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='actif')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return f"{self.name} ({self.code})"
 
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = self.name[:3].upper() if self.name else 'SRV'
+        super().save(*args, **kwargs)
 
 class Categorie(models.Model):
+    STATUS_CHOICES = [('actif', 'Actif'), ('inactif', 'Inactif')]
+
+    code = models.CharField(max_length=50, unique=True, blank=True)
     name = models.CharField(max_length=200)
-    code = models.CharField(max_length=20, unique=True)
     description = models.TextField(null=True, blank=True)
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='subcategories')
-    color = models.CharField(max_length=7, null=True, blank=True, help_text="Couleur HEX")
+    color = models.CharField(max_length=20, null=True, blank=True, help_text="Couleur HEX ou classe Tailwind")
+    icon = models.CharField(max_length=50, null=True, blank=True, help_text="Nom d'icône")
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='actif')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = self.name[:3].upper() if self.name else 'CAT'
+        super().save(*args, **kwargs)
+
 class Tag(models.Model):
+    COLOR_CHOICES = [
+        ('bleu', 'Bleu'),
+        ('vert', 'Vert'),
+        ('orange', 'Orange'),
+        ('rouge', 'Rouge'),
+        ('violet', 'Violet'),
+    ]
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('archived', 'Archived'),
+    ]
     name = models.CharField(max_length=50, unique=True)
-    color = models.CharField(max_length=7, default="#6B7280")
+    slug = models.SlugField(max_length=100, unique=True, blank=True)
+    color = models.CharField(max_length=20, default='#3B82F6')
+    description = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from django.utils.text import slugify
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
 
 class Correspondant(models.Model):
     TYPE_CHOICES = [
-        ('interne', 'Interne'),
-        ('externe', 'Externe'),
-        ('institutionnel', 'Institutionnel'),
+        ('administration', 'Administration'),
+        ('entreprise', 'Entreprise'),
+        ('fournisseur', 'Fournisseur'),
+        ('client', 'Client'),
     ]
     name = models.CharField(max_length=200, verbose_name="Nom complet")
     organisme = models.CharField(max_length=200, null=True, blank=True)
@@ -134,3 +207,26 @@ class BoiteArchive(models.Model):
 
     def __str__(self):
         return f"{self.code} - {self.label}"
+
+class PhysicalLocation(models.Model):
+    site = models.CharField(max_length=200, default='Siège')
+    building = models.CharField(max_length=200, default='A')
+    office = models.CharField(max_length=200, default='Archives')
+    treasury = models.CharField(max_length=200, default='Trésorerie principale')
+    shelf = models.CharField(max_length=200, default='Étagère A')
+    box_number = models.CharField(max_length=100, unique=True, blank=True)
+    document_number = models.CharField(max_length=100, unique=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if not self.box_number:
+            import random
+            self.box_number = f"BOX-{random.randint(100000, 999999)}"
+        if not self.document_number:
+            import random
+            self.document_number = f"DOC-{random.randint(100000, 999999)}"
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.site} - {self.building} - {self.office} (Box: {self.box_number}, Doc: {self.document_number})"

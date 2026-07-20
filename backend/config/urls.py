@@ -8,6 +8,7 @@ urlpatterns = [
     path('api/auth/', include('apps.authentication.urls')),
     path('api/', include('apps.users.urls')),
     path('api/', include('apps.organization.urls')),
+    path('api/organization/', include('apps.organization.urls')),
     path('api/', include('apps.documents.urls')),
     path('api/', include('apps.dossiers.urls')),
     path('api/', include('apps.courriers.urls')),
@@ -17,6 +18,8 @@ urlpatterns = [
     path('api/', include('apps.audit.urls')),
     path('api/', include('apps.dashboard.urls')),
     path('api/', include('apps.settings_app.urls')),
+    path('api/', include('apps.messagerie.urls')),
+    path('api/', include('apps.common.urls')),
 ]
 
 if settings.DEBUG:

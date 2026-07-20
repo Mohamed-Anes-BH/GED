@@ -1,12 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Search, Filter, RotateCcw, Save, LayoutGrid, List, LayoutList, Download, 
   FileText, Folder, CheckCircle, Clock, Eye, Star, MoreVertical, 
   MapPin, X, ChevronRight, Bookmark, ArrowDown
 } from 'lucide-react';
+import { useSearch } from '../hooks/useSearch';
 
 export function SearchPage() {
   const [viewMode, setViewMode] = useState<'tableau' | 'liste' | 'grille'>('tableau');
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  const { results, loading, search } = useSearch();
+
+  useEffect(() => {
+    // Initial global load or typed search handling could be here.
+    search('a'); // load everything matching "a" as a showcase if desired, else wait for typing
+  }, []);
 
   // Helper for highlighting text
   const Highlight = ({ children }: { children: React.ReactNode }) => (
@@ -17,9 +26,9 @@ export function SearchPage() {
     <div className="flex flex-col gap-6 font-poppins pb-24">
       {/* ─── Header ────────────────────────────────────────────── */}
       <div className="flex flex-col gap-1">
-        <h2 className="text-[28px] font-bold font-oswald text-gray-900 dark:text-gray-100">Recherche avancée</h2>
+        <h2 className="text-[28px] font-bold font-oswald text-gray-900 dark:text-[#FFFFFF]">Recherche avancée</h2>
         <div className="flex items-center gap-2 text-xs font-medium text-gray-500">
-           <FileText size={14}/> <span>Documents</span> <span>›</span> <span className="text-gray-900 font-semibold dark:text-gray-100">Recherche avancée</span>
+           <FileText size={14}/> <span>Documents</span> <span>›</span> <span className="text-gray-900 dark:text-[#FFFFFF] font-semibold dark:text-[#FFFFFF]">Recherche avancée</span>
         </div>
       </div>
 
@@ -27,15 +36,27 @@ export function SearchPage() {
       <div className="flex items-start gap-6 flex-col xl:flex-row">
         
         {/* LEFT COLUMN: FILTERS (Fixed Width) */}
-        <div className="w-full xl:w-[300px] shrink-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl flex flex-col shadow-sm sticky top-6">
-          <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-2xl">
-            <h3 className="font-semibold text-[15px] flex items-center gap-2 text-gray-800"><Filter size={16}/> Filtres avancés</h3>
+        <div className="w-full xl:w-[300px] shrink-0 bg-white dark:bg-[var(--dash-card-bg)] border border-gray-200 dark:border-[var(--dash-border)] rounded-2xl flex flex-col shadow-sm sticky top-6">
+          <div className="p-4 border-b border-gray-100 dark:border-[var(--dash-border)] flex justify-between items-center bg-gray-50 dark:bg-[var(--dash-bg)]/50 rounded-t-2xl">
+            <h3 className="font-semibold text-[15px] flex items-center gap-2 text-gray-800 dark:text-[var(--dash-text)]"><Filter size={16}/> Filtres avancés</h3>
             <button className="text-xs text-orange-500 font-medium flex items-center gap-1 hover:underline"><RotateCcw size={12}/> Réinitialiser</button>
           </div>
           
           <div className="p-5 flex flex-col gap-4 max-h-[600px] overflow-y-auto custom-scrollbar">
              {/* Filter Inputs */}
-             <FilterField label="Nom du document" placeholder="Ex: Rapport, Statistiques..." />
+             <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-medium text-gray-600 dark:text-[var(--dash-text-muted)]">Rechercher une requête</label>
+                <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Ex: Rapport, Statistiques..." className="w-full border border-gray-200 dark:border-[var(--dash-border)] rounded-lg p-2 text-xs outline-none focus:border-orange-500 bg-white dark:bg-[var(--dash-card-bg)] text-gray-800 dark:text-[var(--dash-text)]" />
+             </div>
+             <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-medium text-gray-600 dark:text-[var(--dash-text-muted)]">🔍 Dans</label>
+                <select className="w-full border border-gray-200 dark:border-[var(--dash-border)] bg-white dark:bg-[var(--dash-card-bg)] rounded-lg p-2 text-xs outline-none focus:border-orange-500 text-gray-700 dark:text-[var(--dash-text-muted)]">
+                  <option value="all">Documents, Courriers, Dossiers</option>
+                  <option value="documents">Documents</option>
+                  <option value="courriers">Courriers</option>
+                  <option value="dossiers">Dossiers</option>
+                </select>
+             </div>
              <FilterField label="Code document" placeholder="Ex: DOC-2024-001" />
              <FilterSelect label="Type" options={["Tous les types"]} />
              <FilterSelect label="Catégorie" options={["Toutes les catégories"]} />
@@ -44,8 +65,8 @@ export function SearchPage() {
              <FilterSelect label="Responsable" options={["Tous les responsables"]} />
              
              <div className="grid grid-cols-2 gap-2">
-               <div className="flex flex-col gap-1.5"><label className="text-[11px] font-medium text-gray-600">Date création (Du)</label><input type="date" className="border border-gray-200 rounded-lg p-2 text-xs outline-none focus:border-orange-500" /></div>
-               <div className="flex flex-col gap-1.5"><label className="text-[11px] font-medium text-gray-600">(Au)</label><input type="date" className="border border-gray-200 rounded-lg p-2 text-xs outline-none focus:border-orange-500" /></div>
+               <div className="flex flex-col gap-1.5"><label className="text-[11px] font-medium text-gray-600 dark:text-[var(--dash-text-muted)]">Date création (Du)</label><input type="date" className="border border-gray-200 dark:border-[var(--dash-border)] rounded-lg p-2 text-xs outline-none focus:border-orange-500" /></div>
+               <div className="flex flex-col gap-1.5"><label className="text-[11px] font-medium text-gray-600 dark:text-[var(--dash-text-muted)]">(Au)</label><input type="date" className="border border-gray-200 dark:border-[var(--dash-border)] rounded-lg p-2 text-xs outline-none focus:border-orange-500" /></div>
              </div>
 
              <FilterSelect label="Direction" options={["Toutes les directions"]} />
@@ -57,9 +78,9 @@ export function SearchPage() {
              <FilterSegment label="Signature" options={['Signé', 'Non signé', 'Indifférent']} active="Signé" />
           </div>
 
-          <div className="p-4 border-t border-gray-100 flex flex-col gap-2 bg-white rounded-b-2xl">
-             <button className="w-full py-2.5 bg-orange-500 text-white font-semibold text-[13px] rounded-xl flex items-center justify-center gap-2 shadow-sm shadow-orange-500/20 hover:bg-orange-600"><Search size={16}/> Rechercher</button>
-             <button className="w-full py-2.5 border border-gray-200 text-gray-700 font-semibold text-[13px] rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50"><Save size={16}/> Enregistrer la recherche</button>
+          <div className="p-4 border-t border-gray-100 dark:border-[var(--dash-border)] flex flex-col gap-2 bg-white dark:bg-[var(--dash-card-bg)] rounded-b-2xl">
+             <button onClick={() => search(searchTerm)} className="w-full py-2.5 bg-orange-500 text-white font-semibold text-[13px] rounded-xl flex items-center justify-center gap-2 shadow-sm shadow-orange-500/20 hover:bg-orange-600"><Search size={16}/> Rechercher</button>
+             <button className="w-full py-2.5 border border-gray-200 dark:border-[var(--dash-border)] text-gray-700 dark:text-[var(--dash-text-muted)] font-semibold text-[13px] rounded-xl flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-[var(--dash-border)] dark:bg-[var(--dash-bg)]"><Save size={16}/> Enregistrer la recherche</button>
           </div>
         </div>
 
@@ -70,32 +91,36 @@ export function SearchPage() {
           <div className="flex flex-wrap lg:flex-nowrap justify-between items-center gap-4">
              {/* Stats */}
              <div className="flex gap-4 flex-1">
-                <StatBox label="Documents trouvés" value="324" icon={FileText} color="text-gray-800" />
+                <StatBox label="Documents trouvés" value="324" icon={FileText} color="text-gray-800 dark:text-[var(--dash-text)]" />
                 <StatBox label="Temps de recherche" value={<>0.23 <span className="text-sm font-poppins text-gray-500 font-normal">sec</span></>} icon={Clock} color="text-yellow-600" />
                 <StatBox label="Documents OCR" value="280" icon={Search} color="text-green-500" />
              </div>
              
              {/* View Toggles */}
              <div className="flex flex-col gap-2 shrink-0">
-                <div className="flex bg-gray-100 rounded-lg p-1 w-max self-end border border-gray-200">
+                <div className="flex bg-gray-100 rounded-lg p-1 w-max self-end border border-gray-200 dark:border-[var(--dash-border)]">
                   <ViewBtn active={viewMode==='tableau'} onClick={()=>setViewMode('tableau')} icon={LayoutList} label="Tableau" />
                   <ViewBtn active={viewMode==='liste'} onClick={()=>setViewMode('liste')} icon={List} label="Liste" />
                   <ViewBtn active={viewMode==='grille'} onClick={()=>setViewMode('grille')} icon={LayoutGrid} label="Grille" />
                 </div>
                 <div className="flex items-center gap-2 text-[11px] font-medium self-end">
                    <span className="text-gray-500">Trier par :</span>
-                   <select className="border border-gray-200 bg-white rounded-lg px-2 py-1 outline-none text-gray-700 font-semibold"><option>Pertinence</option></select>
-                   <button className="p-1 border border-gray-200 bg-white rounded flex items-center justify-center"><ArrowDown size={14}/></button>
+                   <select className="border border-gray-200 dark:border-[var(--dash-border)] bg-white dark:bg-[var(--dash-card-bg)] rounded-lg px-2 py-1 outline-none text-gray-700 dark:text-[var(--dash-text-muted)] font-semibold">
+                     <option value="recent">Plus récent</option>
+                     <option value="ancien">Plus ancien</option>
+                     <option value="priorite">Priorité</option>
+                   </select>
+                   <button className="p-1 border border-gray-200 dark:border-[var(--dash-border)] bg-white dark:bg-[var(--dash-card-bg)] rounded flex items-center justify-center"><ArrowDown size={14}/></button>
                 </div>
              </div>
           </div>
 
           {/* Results Table */}
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+          <div className="bg-white dark:bg-[var(--dash-card-bg)] border border-gray-200 dark:border-[var(--dash-border)] rounded-2xl shadow-sm overflow-hidden flex flex-col">
              <div className="overflow-x-auto">
                <table className="w-full text-left text-xs whitespace-nowrap">
                   <thead>
-                    <tr className="border-b border-gray-100 text-gray-500 font-medium">
+                    <tr className="border-b border-gray-100 dark:border-[var(--dash-border)] text-gray-500 font-medium">
                       <th className="py-3 px-4 w-10"><input type="checkbox" className="rounded" /></th>
                       <th className="py-3 px-4 font-medium">Nom du document</th>
                       <th className="py-3 px-4 font-medium">Code</th>
@@ -109,48 +134,56 @@ export function SearchPage() {
                       <th className="py-3 px-4 font-medium w-32">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="text-gray-800">
+                   <tbody className="text-gray-800 dark:text-[var(--dash-text)]">
                     
-                    <ResultRow icon="PDF" color="bg-red-100 text-red-600" 
-                               name={<>Rapport <Highlight>Production</Highlight> <Highlight>Céréalière</Highlight> 2024.pdf</>} 
-                               code="RAP-2024-001" cat="Rapports" author="Yacine M." ver="3.0" status="Actif" date="15/05/2024" size="4.2 MB" ocr />
-                               
-                    <ResultRow icon="W" color="bg-blue-100 text-blue-600" 
-                               name={<>Statistiques <Highlight>Production</Highlight> Blé Tendre 2024.docx</>} 
-                               code="STAT-2024-015" cat="Statistiques" author="Nadia A." ver="1.2" status="Actif" date="14/05/2024" size="2.1 MB" ocr />
-                               
-                    <ResultRow icon="PDF" color="bg-red-100 text-red-600" 
-                               name={<>Courrier Direction Générale <Highlight>Production</Highlight> et Rendement.pdf</>} 
-                               code="COUR-2024-223" cat="Courriers" author="Sofiane H." ver="2.0" status="Actif" date="13/05/2024" size="1.8 MB" ocr />
-                               
-                    <ResultRow icon="X" color="bg-green-100 text-green-600" 
-                               name={<>Tableau <Highlight>Production</Highlight> par Région 2023-2024.xlsx</>} 
-                               code="TAB-2024-063" cat="Tableaux" author="Yacine M." ver="1.0" status="Actif" date="12/05/2024" size="1.2 MB" ocr />
-                               
-                    <ResultRow icon="Folder" color="text-yellow-500 fill-yellow-200" 
-                               name={<>Dossier <Highlight>Production</Highlight> 2023</>} 
-                               code="DOS-2023-011" cat="Dossiers" author="—" ver="—" status="Actif" date="10/05/2024" size="—" noOcr isFolder />
-                               
-                    <ResultRow icon="PDF" color="bg-red-100 text-red-600" 
-                               name={<>Plan Stratégique <Highlight>Production</Highlight> Agricole 2025.pdf</>} 
-                               code="PLAN-2024-002" cat="Plans" author="Yacine M." ver="1.0" status="Validé" date="08/05/2024" size="5.1 MB" ocr />
-                               
-                  </tbody>
-               </table>
+                     {loading ? (
+                        <tr>
+                           <td colSpan={11} className="py-8 text-center text-gray-500">
+                             Recherche en cours...
+                           </td>
+                        </tr>
+                     ) : (
+                        <>
+                           {results?.documents?.map((d: any) => (
+                             <ResultRow key={`doc-${d.id}`} icon="DOC" color="bg-orange-100 text-orange-600" 
+                                name={d.title}
+                                code={`DOC-${d.id}`} cat="Document" author="-" ver="1.0" status="Actif" date="-" size="-" ocr />
+                           ))}
+                           {results?.courriers?.map((c: any) => (
+                             <ResultRow key={`cou-${c.id}`} icon="MAIL" color="bg-blue-100 text-blue-600" 
+                                name={c.objet}
+                                code={c.numero} cat="Courrier" author="-" ver="1.0" status="Actif" date="-" size="-" ocr />
+                           ))}
+                           {results?.dossiers?.map((d: any) => (
+                             <ResultRow key={`dos-${d.id}`} icon="Folder" color="text-yellow-500 fill-yellow-200" 
+                                name={d.name}
+                                code={`DOS-${d.id}`} cat="Dossier" author="-" ver="-" status="Actif" date="-" size="-" noOcr isFolder />
+                           ))}
+                           {(!results?.documents?.length && !results?.courriers?.length && !results?.dossiers?.length) && (
+                             <tr>
+                               <td colSpan={11} className="py-8 text-center text-gray-500">
+                                 Aucun résultat trouvé.
+                               </td>
+                             </tr>
+                           )}
+                        </>
+                     )}
+                   </tbody>
+                </table>
              </div>
              
              {/* Pagination */}
-             <div className="flex justify-between items-center p-4 border-t border-gray-100 text-[11px] text-gray-500 bg-gray-50/50">
+             <div className="flex justify-between items-center p-4 border-t border-gray-100 dark:border-[var(--dash-border)] text-[11px] text-gray-500 bg-gray-50 dark:bg-[var(--dash-bg)]/50">
                 <span>Affichage de 1 à 10 sur 324 résultats</span>
                 <div className="flex items-center gap-2">
-                   <button className="px-2 py-1.5 border border-gray-200 bg-white rounded hover:bg-gray-50">&lt;</button>
+                   <button className="px-2 py-1.5 border border-gray-200 dark:border-[var(--dash-border)] bg-white dark:bg-[var(--dash-card-bg)] rounded hover:bg-gray-50 dark:hover:bg-[var(--dash-border)] dark:bg-[var(--dash-bg)]">&lt;</button>
                    <button className="px-3 py-1.5 border border-orange-500 bg-orange-50 text-orange-600 font-semibold rounded">1</button>
-                   <button className="px-3 py-1.5 border border-transparent hover:bg-gray-100 rounded text-gray-700">2</button>
-                   <button className="px-3 py-1.5 border border-transparent hover:bg-gray-100 rounded text-gray-700">3</button>
+                   <button className="px-3 py-1.5 border border-transparent hover:bg-gray-100 rounded text-gray-700 dark:text-[var(--dash-text-muted)]">2</button>
+                   <button className="px-3 py-1.5 border border-transparent hover:bg-gray-100 rounded text-gray-700 dark:text-[var(--dash-text-muted)]">3</button>
                    <span className="px-1 text-gray-400">...</span>
-                   <button className="px-3 py-1.5 border border-transparent hover:bg-gray-100 rounded text-gray-700">33</button>
-                   <button className="px-2 py-1.5 border border-gray-200 bg-white rounded hover:bg-gray-50">&gt;</button>
-                   <select className="ml-4 border border-gray-200 bg-white rounded px-3 py-1.5 outline-none font-medium text-gray-700"><option>10 / page</option></select>
+                   <button className="px-3 py-1.5 border border-transparent hover:bg-gray-100 rounded text-gray-700 dark:text-[var(--dash-text-muted)]">33</button>
+                   <button className="px-2 py-1.5 border border-gray-200 dark:border-[var(--dash-border)] bg-white dark:bg-[var(--dash-card-bg)] rounded hover:bg-gray-50 dark:hover:bg-[var(--dash-border)] dark:bg-[var(--dash-bg)]">&gt;</button>
+                   <select className="ml-4 border border-gray-200 dark:border-[var(--dash-border)] bg-white dark:bg-[var(--dash-card-bg)] rounded px-3 py-1.5 outline-none font-medium text-gray-700 dark:text-[var(--dash-text-muted)]"><option>10 / page</option></select>
                 </div>
              </div>
           </div>
@@ -182,12 +215,12 @@ export function SearchPage() {
         {/* RIGHT COLUMN: PREVIEW */}
         <div className="w-full xl:w-[280px] shrink-0 flex flex-col gap-4">
            {/* document preview panel */}
-           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-sm sticky top-6">
+           <div className="bg-white dark:bg-[var(--dash-card-bg)] border border-gray-200 dark:border-[var(--dash-border)] rounded-2xl p-5 shadow-sm sticky top-6">
               <h3 className="font-semibold text-sm mb-4">Aperçu du document</h3>
               
-              <div className="bg-gray-100 w-full aspect-[1/1.3] rounded-xl border border-gray-200 shadow-inner flex items-center justify-center p-4">
+              <div className="bg-gray-100 w-full aspect-[1/1.3] rounded-xl border border-gray-200 dark:border-[var(--dash-border)] shadow-inner flex items-center justify-center p-4">
                  {/* fake document page preview */}
-                 <div className="bg-white w-full h-full shadow-sm rounded flex flex-col gap-2 p-2">
+                 <div className="bg-white dark:bg-[var(--dash-card-bg)] w-full h-full shadow-sm rounded flex flex-col gap-2 p-2">
                     <div className="h-2 w-1/2 mx-auto bg-gray-200 rounded-full mt-2"></div>
                     <div className="h-4 w-3/4 mx-auto bg-gray-800 rounded mt-1"></div>
                     <div className="flex gap-2 mt-4">
@@ -213,12 +246,12 @@ export function SearchPage() {
                     <div className="flex items-center"><span className="w-20 text-gray-500">OCR</span><span className="font-semibold text-green-600 flex items-center gap-1"><CheckCircle size={10}/> Disponible (98%)</span></div>
                  </div>
 
-                 <div className="border-t border-gray-100 pt-3 flex flex-col gap-2">
-                    <strong className="text-[11px] font-semibold text-gray-800">Emplacement physique</strong>
+                 <div className="border-t border-gray-100 dark:border-[var(--dash-border)] pt-3 flex flex-col gap-2">
+                    <strong className="text-[11px] font-semibold text-gray-800 dark:text-[var(--dash-text)]">Emplacement physique</strong>
                     <div className="text-[10px] text-gray-500 leading-relaxed font-medium">
                        Administration centrale › Bâtiment A ›<br/>
                        Bureau Juridique › Rayon 2 › Étagère 1 ›<br/>
-                       Boîte B-025 › <span className="text-gray-900 font-bold">Document 18</span>
+                       Boîte B-025 › <span className="text-gray-900 dark:text-[#FFFFFF] font-bold">Document 18</span>
                     </div>
                  </div>
 
@@ -229,11 +262,11 @@ export function SearchPage() {
       </div>
       
       {/* ─── Bottom Actions Bar ────────────────────────────────── */}
-      <div className="fixed bottom-0 left-0 lg:left-[250px] right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 px-6 flex justify-between items-center z-50">
-         <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 font-semibold text-[13px]"><RotateCcw size={16} /> Réinitialiser les filtres</button>
+      <div className="fixed bottom-0 left-0 lg:left-[250px] right-0 bg-white dark:bg-[var(--dash-card-bg)] border-t border-gray-200 dark:border-[var(--dash-border)] p-4 px-6 flex justify-between items-center z-50">
+         <button className="flex items-center gap-2 text-gray-600 dark:text-[var(--dash-text-muted)] hover:text-gray-900 dark:text-[#FFFFFF] font-semibold text-[13px]"><RotateCcw size={16} /> Réinitialiser les filtres</button>
          <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 font-semibold text-[13px] rounded-xl shadow-sm hover:bg-gray-50"><Download size={16}/> Exporter les résultats</button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 font-semibold text-[13px] rounded-xl shadow-sm hover:bg-gray-50"><Folder size={16}/> Ouvrir le document</button>
+            <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[var(--dash-card-bg)] border border-gray-200 dark:border-[var(--dash-border)] text-gray-700 dark:text-[var(--dash-text-muted)] font-semibold text-[13px] rounded-xl shadow-sm hover:bg-gray-50 dark:hover:bg-[var(--dash-border)] dark:bg-[var(--dash-bg)]"><Download size={16}/> Exporter les résultats</button>
+            <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-[var(--dash-card-bg)] border border-gray-200 dark:border-[var(--dash-border)] text-gray-700 dark:text-[var(--dash-text-muted)] font-semibold text-[13px] rounded-xl shadow-sm hover:bg-gray-50 dark:hover:bg-[var(--dash-border)] dark:bg-[var(--dash-bg)]"><Folder size={16}/> Ouvrir le document</button>
             <button className="flex items-center gap-2 px-6 py-2 bg-red-500 text-white font-semibold text-[13px] rounded-xl shadow-sm shadow-red-500/20 hover:bg-red-600"><X size={16}/> Fermer</button>
          </div>
       </div>
@@ -247,8 +280,8 @@ export function SearchPage() {
 function FilterField({ label, placeholder }: any) {
   return (
     <div className="flex flex-col gap-1.5">
-       <label className="text-[11px] font-medium text-gray-600">{label}</label>
-       <input type="text" placeholder={placeholder} className="w-full border border-gray-200 rounded-lg p-2 text-xs outline-none focus:border-orange-500" />
+       <label className="text-[11px] font-medium text-gray-600 dark:text-[var(--dash-text-muted)]">{label}</label>
+       <input type="text" placeholder={placeholder} className="w-full border border-gray-200 dark:border-[var(--dash-border)] rounded-lg p-2 text-xs outline-none focus:border-orange-500" />
     </div>
   );
 }
@@ -256,8 +289,8 @@ function FilterField({ label, placeholder }: any) {
 function FilterSelect({ label, options }: any) {
   return (
     <div className="flex flex-col gap-1.5">
-       <label className="text-[11px] font-medium text-gray-600">{label}</label>
-       <select className="w-full border border-gray-200 bg-white rounded-lg p-2 text-xs outline-none font-medium text-gray-700">
+       <label className="text-[11px] font-medium text-gray-600 dark:text-[var(--dash-text-muted)]">{label}</label>
+       <select className="w-full border border-gray-200 dark:border-[var(--dash-border)] bg-white dark:bg-[var(--dash-card-bg)] rounded-lg p-2 text-xs outline-none font-medium text-gray-700 dark:text-[var(--dash-text-muted)]">
            {options.map((opt:string)=><option key={opt}>{opt}</option>)}
        </select>
     </div>
@@ -267,11 +300,11 @@ function FilterSelect({ label, options }: any) {
 function FilterSegment({ label, options, active }: any) {
   return (
     <div className="flex flex-col gap-1.5">
-       <label className="text-[11px] font-medium text-gray-600">{label}</label>
-       <div className="flex bg-gray-100 rounded-lg p-1 w-full border border-gray-200">
+       <label className="text-[11px] font-medium text-gray-600 dark:text-[var(--dash-text-muted)]">{label}</label>
+       <div className="flex bg-gray-100 rounded-lg p-1 w-full border border-gray-200 dark:border-[var(--dash-border)]">
           {options.map((opt:string) => (
              <button key={opt} className={`flex-1 text-[11px] font-semibold py-1 rounded-md text-center transition-colors 
-                ${active === opt ? 'bg-white text-orange-600 shadow-sm border border-gray-200' : 'text-gray-500 hover:text-gray-700'}`}>
+                ${active === opt ? 'bg-white dark:bg-[var(--dash-card-bg)] text-orange-600 shadow-sm border border-gray-200 dark:border-[var(--dash-border)]' : 'text-gray-500 hover:text-gray-700 dark:text-[var(--dash-text-muted)]'}`}>
                 {opt}
              </button>
           ))}
@@ -282,7 +315,7 @@ function FilterSegment({ label, options, active }: any) {
 
 function StatBox({ label, value, icon: Icon, color }: any) {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex flex-col gap-2 flex-1 relative overflow-hidden">
+    <div className="bg-white dark:bg-[var(--dash-card-bg)] border border-gray-200 dark:border-[var(--dash-border)] rounded-2xl p-4 shadow-sm flex flex-col gap-2 flex-1 relative overflow-hidden">
        <span className="text-[11px] font-medium text-gray-500">{label}</span>
        <strong className={`text-3xl font-bold font-oswald ${color}`}>{value}</strong>
        <Icon size={40} className="absolute -right-2 -bottom-2 text-gray-100/50 transform -rotate-12" />
@@ -293,7 +326,7 @@ function StatBox({ label, value, icon: Icon, color }: any) {
 function ViewBtn({ active, icon: Icon, label, onClick }: any) {
   return (
     <button onClick={onClick} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-bold transition-all
-       ${active ? 'bg-white text-orange-600 shadow-sm border border-gray-200' : 'text-gray-500 hover:text-gray-800'}`}>
+       ${active ? 'bg-white dark:bg-[var(--dash-card-bg)] text-orange-600 shadow-sm border border-gray-200 dark:border-[var(--dash-border)]' : 'text-gray-500 hover:text-gray-800 dark:text-[var(--dash-text)]'}`}>
        <Icon size={14} /> {label}
     </button>
   );
@@ -309,17 +342,17 @@ function ResultRow({ icon, color, name, code, cat, author, ver, status, date, si
           ) : (
              <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[9px] font-bold ${color}`}>{icon}</div>
           )}
-          <strong className="font-semibold text-gray-800 text-[12.5px] max-w-[200px] truncate">{name}</strong>
+          <strong className="font-semibold text-gray-800 dark:text-[var(--dash-text)] text-[12.5px] max-w-[200px] truncate">{name}</strong>
        </td>
        <td className="py-2.5 px-4 text-gray-500 font-medium">{code}</td>
-       <td className="py-2.5 px-4 text-gray-600">{cat}</td>
-       <td className="py-2.5 px-4 text-gray-600">{author}</td>
+       <td className="py-2.5 px-4 text-gray-600 dark:text-[var(--dash-text-muted)]">{cat}</td>
+       <td className="py-2.5 px-4 text-gray-600 dark:text-[var(--dash-text-muted)]">{author}</td>
        <td className="py-2.5 px-4 text-gray-500">{ver}</td>
        <td className="py-2.5 px-4 text-center">
          <span className={`px-2 py-0.5 text-[10px] rounded flex items-center justify-center gap-1 w-max border font-bold
            ${status==='Actif'?'bg-green-50 text-green-600 border-green-200':
              status==='Validé'?'bg-emerald-50 text-emerald-600 border-emerald-200':
-             status==='Archivé'?'bg-gray-100 text-gray-600 border-gray-200':
+             status==='Archivé'?'bg-gray-100 text-gray-600 dark:text-[var(--dash-text-muted)] border-gray-200 dark:border-[var(--dash-border)]':
              status==='En attente'?'bg-yellow-50 text-yellow-600 border-yellow-200':''}`}>
             {status}
          </span>
@@ -328,7 +361,7 @@ function ResultRow({ icon, color, name, code, cat, author, ver, status, date, si
           {!noOcr ? (ocr ? <CheckCircle size={14} className="mx-auto" /> : <div className="text-gray-300">-</div>) : <div className="text-gray-300">-</div>}
        </td>
        <td className="py-2.5 px-4 text-gray-500 font-medium">{date}</td>
-       <td className="py-2.5 px-4 text-gray-700 font-semibold">{size}</td>
+       <td className="py-2.5 px-4 text-gray-700 dark:text-[var(--dash-text-muted)] font-semibold">{size}</td>
        <td className="py-2.5 px-4">
           <div className="flex items-center gap-2.5 text-gray-400">
              {!isFolder && <Eye size={15} className="hover:text-orange-500" />}
@@ -344,8 +377,8 @@ function ResultRow({ icon, color, name, code, cat, author, ver, status, date, si
 
 function BottomPanel({ title, btnLabel, noBtn, children }: any) {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex flex-col">
-       <h4 className="font-semibold text-[13px] text-gray-800 mb-3">{title}</h4>
+    <div className="bg-white dark:bg-[var(--dash-card-bg)] border border-gray-200 dark:border-[var(--dash-border)] rounded-2xl p-4 shadow-sm flex flex-col">
+       <h4 className="font-semibold text-[13px] text-gray-800 dark:text-[var(--dash-text)] mb-3">{title}</h4>
        <div className="flex flex-col gap-1.5 flex-1 line-clamp-4">
           {children}
        </div>
@@ -360,10 +393,10 @@ function BottomPanel({ title, btnLabel, noBtn, children }: any) {
 
 function SearchItem({ icon: Icon, text, sub, active }: any) {
   return (
-    <div className={`flex items-center justify-between p-1.5 rounded-lg cursor-pointer ${active ? 'bg-orange-50' : 'hover:bg-gray-50'}`}>
+    <div className={`flex items-center justify-between p-1.5 rounded-lg cursor-pointer ${active ? 'bg-orange-50' : 'hover:bg-gray-50 dark:hover:bg-[var(--dash-border)] dark:bg-[var(--dash-bg)]'}`}>
        <div className="flex items-center gap-2">
           <Icon size={14} className={active ? 'text-orange-500' : 'text-gray-400'} />
-          <span className={`text-[11px] font-medium ${active ? 'text-orange-700' : 'text-gray-700'}`}>{text}</span>
+          <span className={`text-[11px] font-medium ${active ? 'text-orange-700' : 'text-gray-700 dark:text-[var(--dash-text-muted)]'}`}>{text}</span>
        </div>
        {sub && <span className="text-[9px] text-gray-400">{sub}</span>}
     </div>
@@ -372,7 +405,7 @@ function SearchItem({ icon: Icon, text, sub, active }: any) {
 
 function SuggestionTag({ text }: { text: string }) {
   return (
-    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded-full text-[10px] font-medium text-gray-600 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 cursor-pointer transition-colors">
+    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-50 dark:bg-[var(--dash-bg)] border border-gray-200 dark:border-[var(--dash-border)] rounded-full text-[10px] font-medium text-gray-600 dark:text-[var(--dash-text-muted)] hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 cursor-pointer transition-colors">
        <Search size={10} /> {text}
     </div>
   );

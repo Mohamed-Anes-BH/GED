@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Send, Calendar, Clock, CheckCircle, AlertTriangle, Archive,
   Search, SlidersHorizontal, ChevronDown, Download, Eye, MoreVertical, Plus,
@@ -6,46 +7,45 @@ import {
 } from 'lucide-react';
 import '../styles/courriers-sortants.css';
 
-/* ─── MOCK DATA ──────────────────────────────────────────── */
-const kpis = [
-  { label: 'Courriers envoyés', value: '986', subtitle: 'Total', delta: '+12.5% ce mois', color: '#3B82F6', icon: Send },
-  { label: 'Envoyés aujourd\'hui', value: '12', subtitle: 'Aujourd\'hui', delta: '+9.1% vs hier', color: '#22C55E', icon: Calendar },
-  { label: 'En attente d\'envoi', value: '18', subtitle: 'À envoyer', delta: '-4.3% ce mois', color: '#F59E0B', icon: Clock, trendDown: true },
-  { label: 'Envoyés', value: '930', subtitle: 'Envoyés', delta: '+10.8% ce mois', color: '#22C55E', icon: CheckCircle },
-  { label: 'Urgents', value: '9', subtitle: 'Priorité haute', delta: '+2.4% ce mois', color: '#EF4444', icon: AlertTriangle },
-  { label: 'Archivés', value: '742', subtitle: 'Archivés', delta: '+8.2% ce mois', color: '#8B5CF6', icon: Archive },
-];
+import { useCourriers } from '../hooks/useCourriers';
+import { courriersService } from '../services/courriers';
+import { formatDate } from '../utils/formatters';
+import { CourrierSortant } from '../types';
 
-const courriers = [
-  { id: '1', numero: 'CS-2024-0786', ref: 'REF-7895/24', date: '15/05/2024', destinataire: 'Ministère de l\'Agriculture', organisme: 'Ministère', objet: 'Rapport annuel sur la production céréalière 2024', priorite: 'Haute', statut: 'Envoyé', resp: 'Yacine M.', pj: 3, wfColor: '#22C55E' },
-  { id: '2', numero: 'CS-2024-0785', ref: 'REF-7894/24', date: '15/05/2024', destinataire: 'Direction des Finances', organisme: 'Finance', objet: 'Budget prévisionnel exercice 2024', priorite: 'Moyenne', statut: 'Préparé', resp: 'Sofiane H.', pj: 2, wfColor: '#3B82F6' },
-  { id: '3', numero: 'CS-2024-0784', ref: 'REF-7893/24', date: '14/05/2024', destinataire: 'Office National des Statistiques', organisme: 'ONS', objet: 'Statistiques agricoles du 1er trimestre', priorite: 'Normale', statut: 'Envoyé', resp: 'Nadia A.', pj: 1, wfColor: '#22C55E' },
-  { id: '4', numero: 'CS-2024-0783', ref: 'REF-7892/24', date: '14/05/2024', destinataire: 'SONELGAZ', organisme: 'Énergie', objet: 'Demande de raccordement électrique', priorite: 'Haute', statut: 'Envoyé', resp: 'Yacine M.', pj: 2, wfColor: '#22C55E' },
-  { id: '5', numero: 'CS-2024-0782', ref: 'REF-7891/24', date: '13/05/2024', destinataire: 'Algérie Télécom', organisme: 'Télécom', objet: 'Proposition de partenariat et collaboration', priorite: 'Moyenne', statut: 'En attente', resp: 'Sofiane H.', pj: 1, wfColor: '#F59E0B' },
-  { id: '6', numero: 'CS-2024-0781', ref: 'REF-7890/24', date: '12/05/2024', destinataire: 'Banque Nationale d\'Algérie', organisme: 'BNA', objet: 'Offre de financement projet agricole', priorite: 'Urgente', statut: 'Préparé', resp: 'Yacine M.', pj: 3, wfColor: '#3B82F6' },
-  { id: '7', numero: 'CS-2024-0780', ref: 'REF-7889/24', date: '11/05/2024', destinataire: 'Chambre d\'Agriculture', organisme: 'Agriculture', objet: 'Invitation à la conférence internationale', priorite: 'Normale', statut: 'Envoyé', resp: 'Nadia A.', pj: 1, wfColor: '#22C55E' },
-  { id: '8', numero: 'CS-2024-0779', ref: 'REF-7888/24', date: '10/05/2024', destinataire: 'Assurance CAAT', organisme: 'Assurance', objet: 'Contrat d\'assurance matériel agricole', priorite: 'Moyenne', statut: 'Envoyé', resp: 'Sofiane H.', pj: 2, wfColor: '#22C55E' },
-  { id: '9', numero: 'CS-2024-0778', ref: 'REF-7887/24', date: '09/05/2024', destinataire: 'Fournisseurs Divers', organisme: 'Fournisseurs', objet: 'Catalogue équipements agricoles', priorite: 'Normale', statut: 'Diffusé', resp: 'Yacine M.', pj: 4, wfColor: '#8B5CF6' },
-  { id: '10', numero: 'CS-2024-0777', ref: 'REF-7886/24', date: '08/05/2024', destinataire: 'Ministère du Commerce', organisme: 'Commerce', objet: 'Réglementation importation des semences', priorite: 'Haute', statut: 'Envoyé', resp: 'Nadia A.', pj: 2, wfColor: '#22C55E' },
+/* ─── MOCK DATA (For KPIs only) ──────────────────────────────────────────── */
+const kpisTemplate = [
+  { label: 'Courriers envoyés', key: 'total', subtitle: 'Total', delta: '+4', color: '#3B82F6', icon: Send },
+  { label: 'Envoyés aujourd\'hui', key: 'today', subtitle: 'Aujourd\'hui', delta: '+1', color: '#22C55E', icon: Calendar },
+  { label: 'En attente d\'envoi', key: 'brouillon', subtitle: 'À envoyer', delta: '0', color: '#F59E0B', icon: Clock, trendDown: true },
+  { label: 'Envoyés', key: 'envoye', subtitle: 'Envoyés', delta: '+2', color: '#22C55E', icon: CheckCircle },
+  { label: 'Urgents', key: 'urgent', subtitle: 'Priorité haute', delta: '-1', color: '#EF4444', icon: AlertTriangle },
+  { label: 'Archivés', key: 'archive', subtitle: 'Archivés', delta: '0', color: '#8B5CF6', icon: Archive },
 ];
 
 const prioriteStyles: Record<string, { bg: string; color: string; border: string }> = {
-  Urgente: { bg: '#FEF2F2', color: '#EF4444', border: '#FECACA' },
-  Haute:   { bg: '#FEF2F2', color: '#EF4444', border: '#FECACA' },
-  Moyenne: { bg: '#FFF7ED', color: '#F59E0B', border: '#FED7AA' },
-  Normale: { bg: '#F0FDF4', color: '#22C55E', border: '#BBF7D0' },
+  urgente: { bg: '#FEF2F2', color: '#EF4444', border: '#FECACA' },
+  haute:   { bg: '#FEF2F2', color: '#EF4444', border: '#FECACA' },
+  moyenne: { bg: '#FFF7ED', color: '#F59E0B', border: '#FED7AA' },
+  normale: { bg: '#F0FDF4', color: '#22C55E', border: '#BBF7D0' },
+  basse:   { bg: '#F0FDF4', color: '#22C55E', border: '#BBF7D0' },
 };
 
-const statutStyles: Record<string, { bg: string; color: string; dot: string }> = {
-  'Envoyé':     { bg: '#F0FDF4', color: '#22C55E', dot: '#22C55E' },
-  'Préparé':    { bg: '#EFF6FF', color: '#3B82F6', dot: '#3B82F6' },
-  'En attente': { bg: '#FFF7ED', color: '#F59E0B', dot: '#F59E0B' },
-  'Diffusé':    { bg: '#F5F3FF', color: '#8B5CF6', dot: '#8B5CF6' },
+const statutStyles: Record<string, { bg: string; color: string; dot: string; label: string }> = {
+  'brouillon':     { bg: '#F1F5F9', color: '#64748B', dot: '#64748B', label: 'Brouillon' },
+  'en_validation': { bg: '#EFF6FF', color: '#3B82F6', dot: '#3B82F6', label: 'En validation' },
+  'valide':        { bg: '#F5F3FF', color: '#8B5CF6', dot: '#8B5CF6', label: 'Validé' },
+  'rejete':        { bg: '#FEF2F2', color: '#EF4444', dot: '#EF4444', label: 'Rejeté' },
+  'envoye':        { bg: '#F0FDF4', color: '#22C55E', dot: '#22C55E', label: 'Envoyé' },
+  'signe':         { bg: '#ECFCCB', color: '#84CC16', dot: '#84CC16', label: 'Signé' },
+  'archive':       { bg: '#F8FAFC', color: '#94A3B8', dot: '#94A3B8', label: 'Archivé' },
 };
 
 /* ─── COMPONENT ──────────────────────────────────────────── */
 export function CourriersSortantsPage({ variant = 1 }: { variant?: 1 | 2 | 3 }) {
-  const [selectedId, setSelectedId] = useState<string>('1');
+  const navigate = useNavigate();
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const { data: courriers, loading, totalCount, refetch } = useCourriers('sortants');
+  const selected = courriers.find(c => c.id === selectedId) as (CourrierSortant & { pieces_jointes?: any[], historique?: any[], auteur_nom?: string }) | null;
   
   return (
     <div className="cs-page">
@@ -64,8 +64,14 @@ export function CourriersSortantsPage({ variant = 1 }: { variant?: 1 | 2 | 3 }) 
 
       {/* KPI Row */}
       <div className="cs-kpi-row">
-        {kpis.map((kpi, i) => {
+        {kpisTemplate.map((kpi, i) => {
           const Icon = kpi.icon;
+          let val = 0;
+          if (kpi.key === 'total') val = courriers.length;
+          else if (kpi.key === 'today') val = courriers.filter((c: any) => new Date(c.date_envoi || c.created_at).toDateString() === new Date().toDateString()).length;
+          else if (kpi.key === 'urgent') val = courriers.filter((c: any) => c.priorite?.toLowerCase() === 'urgente' || c.priorite?.toLowerCase() === 'haute').length;
+          else val = courriers.filter((c: any) => c.statut === kpi.key).length;
+
           return (
             <div key={i} className="cs-kpi-card">
               <div className="cs-kpi-icon" style={{ background: `${kpi.color}1A`, color: kpi.color }}>
@@ -73,7 +79,7 @@ export function CourriersSortantsPage({ variant = 1 }: { variant?: 1 | 2 | 3 }) 
               </div>
               <div className="cs-kpi-info">
                 <span className="cs-kpi-label">{kpi.label}</span>
-                <strong className="cs-kpi-value">{kpi.value}</strong>
+                <strong className="cs-kpi-value">{loading ? '-' : val}</strong>
                 <span className="cs-kpi-subtitle">{kpi.subtitle}</span>
                 <span className="cs-kpi-delta" style={{ color: kpi.trendDown ? '#EF4444' : '#22C55E' }}>
                   {kpi.trendDown ? '↓' : '↑'} {kpi.delta}
@@ -97,7 +103,7 @@ export function CourriersSortantsPage({ variant = 1 }: { variant?: 1 | 2 | 3 }) 
             </div>
             <div className="cs-table-actions">
               <button className="cs-export-btn"><Download size={14} /> Export <ChevronDown size={14} /></button>
-              <button className="cs-primary-btn"><Plus size={14} /> Nouveau courrier</button>
+              <button className="cs-primary-btn" onClick={() => navigate('/courriers-sortants/nouveau')}><Plus size={14} /> Nouveau courrier</button>
             </div>
           </div>
 
@@ -121,31 +127,39 @@ export function CourriersSortantsPage({ variant = 1 }: { variant?: 1 | 2 | 3 }) 
                 </tr>
               </thead>
               <tbody>
-                {courriers.map(c => {
-                  const ps = prioriteStyles[c.priorite];
-                  const ss = statutStyles[c.statut];
+                {loading ? (
+                  <tr>
+                    <td colSpan={13} style={{ textAlign: 'center', padding: '2rem' }}>
+                      Chargement...
+                    </td>
+                  </tr>
+                ) : courriers.map((c: any) => {
+                  const prio = c.priorite?.toLowerCase() || 'normale';
+                  const ps = prioriteStyles[prio] || prioriteStyles.normale;
+                  const ss = statutStyles[c.statut] || statutStyles['brouillon'];
+                  const pjCount = c.pieces_jointes?.length || 0;
                   return (
                     <tr key={c.id} className={selectedId === c.id ? 'selected' : ''} onClick={() => setSelectedId(c.id)}>
                       <td><input type="checkbox" onClick={e => e.stopPropagation()} /></td>
                       <td className="cs-txt-bold">{c.numero}</td>
-                      <td className="cs-txt-muted">{c.ref}</td>
-                      <td>{c.date}</td>
+                      <td className="cs-txt-muted">-</td>
+                      <td>{formatDate(c.created_at).split(' à')[0]}</td>
                       <td>{c.destinataire}</td>
-                      <td>{c.organisme}</td>
+                      <td>-</td>
                       <td className="cs-objet-cell">{c.objet}</td>
                       <td>
-                        <span className="cs-badge-outline" style={{ color: ps.color, borderColor: ps.border }}>
+                        <span className="cs-badge-outline capitalize" style={{ color: ps.color, borderColor: ps.border }}>
                           ↑ {c.priorite}
                         </span>
                       </td>
                       <td>
                         <span className="cs-badge-dot" style={{ color: ss.color }}>
-                          <span className="cs-dot" style={{ background: ss.dot }} /> {c.statut}
+                          <span className="cs-dot" style={{ background: ss.dot }} /> {ss.label}
                         </span>
                       </td>
-                      <td>{c.resp}</td>
-                      <td><div className="cs-badge-icon"><Eye size={12} /> {c.pj}</div></td>
-                      <td><span className="cs-wf-ring" style={{ borderColor: c.wfColor }}></span></td>
+                      <td>{c.auteur_nom || 'Auteur'}</td>
+                      <td><div className="cs-badge-icon"><Eye size={12} /> {pjCount}</div></td>
+                      <td><span className="cs-wf-ring" style={{ borderColor: ss.color }}></span></td>
                       <td><button className="cs-icon-btn"><MoreVertical size={16} /></button></td>
                     </tr>
                   );
@@ -155,7 +169,7 @@ export function CourriersSortantsPage({ variant = 1 }: { variant?: 1 | 2 | 3 }) 
           </div>
           
           <div className="cs-pagination">
-            <span>Affichage de 1 à 10 sur 986 courriers</span>
+            <span>Affichage de 1 à {courriers.length} sur {totalCount} courriers</span>
             <div className="cs-pager">
               <button><ChevronLeft size={14}/></button>
               <button className="active">1</button>
@@ -204,40 +218,51 @@ export function CourriersSortantsPage({ variant = 1 }: { variant?: 1 | 2 | 3 }) 
         </div>
 
         {/* Right Column (Aperçu du courrier) */}
+        {selected ? (
         <div className="cs-preview-column">
           <div className="cs-preview-header">
             <h3>Aperçu du courrier</h3>
-            <span className="cs-badge-active">Actif</span>
+            <span className="cs-badge-active capitalize">
+              {(statutStyles[selected.statut] || statutStyles['brouillon']).label}
+            </span>
           </div>
           
           <div className="cs-preview-image-placeholder">
-            {/* Using a structural placeholder representing the document graphic */}
             <div className="cs-doc-graphic">📄 Illustration du Document</div>
           </div>
           
           <div className="cs-preview-details">
             <div className="cs-preview-title-row">
-              <h4>CS-2024-0786</h4>
-              <span className="cs-badge-outline" style={{ color: '#EF4444', borderColor: '#FECACA' }}>Haute priorité</span>
+              <h4>{selected.numero}</h4>
+              <span className="cs-badge-outline capitalize" style={{ 
+                color: (prioriteStyles[selected.priorite?.toLowerCase()] || prioriteStyles.normale).color, 
+                borderColor: (prioriteStyles[selected.priorite?.toLowerCase()] || prioriteStyles.normale).border 
+              }}>{selected.priorite} priorité</span>
             </div>
             
             <table className="cs-preview-table">
               <tbody>
-                <tr><td><Hash size={14}/> Référence</td><td>REF-7895/24</td></tr>
-                <tr><td><UserCircle2 size={14}/> Destinataire</td><td>Ministère de l'Agriculture</td></tr>
-                <tr><td><Building2 size={14}/> Organisme</td><td>Ministère</td></tr>
-                <tr><td><Calendar size={14}/> Date d'envoi</td><td>15/05/2024 à 14:25</td></tr>
-                <tr><td><UserCircle2 size={14}/> Auteur</td><td>Yacine M.</td></tr>
-                <tr><td><Building2 size={14}/> Département</td><td>Statistiques & Analyses</td></tr>
-                <tr><td><Building2 size={14}/> Service</td><td>Bureau Statistiques</td></tr>
-                <tr><td><Paperclip size={14}/> Pièces jointes</td><td>3 fichiers (PDF, XLSX, DOCX)</td></tr>
-                <tr><td><CheckCircle size={14}/> Statut d'envoi</td><td style={{ color: '#22C55E' }}>● Envoyé</td></tr>
+                <tr><td><UserCircle2 size={14}/> Destinataire</td><td>{selected.destinataire}</td></tr>
+                <tr><td><Calendar size={14}/> Date de création</td><td>{formatDate(selected.created_at)}</td></tr>
+                {selected.date_envoi && (
+                   <tr><td><Calendar size={14}/> Date d'envoi</td><td>{formatDate(selected.date_envoi)}</td></tr>
+                )}
+                <tr><td><UserCircle2 size={14}/> Auteur</td><td>{selected.auteur_nom || 'Auteur'}</td></tr>
+                <tr><td><Paperclip size={14}/> Pièces jointes</td><td>{selected.pieces_jointes?.length || 0} fichiers</td></tr>
+                <tr><td><CheckCircle size={14}/> Statut d'envoi</td><td style={{ color: (statutStyles[selected.statut] || statutStyles['brouillon']).color }}>● {(statutStyles[selected.statut] || statutStyles['brouillon']).label}</td></tr>
               </tbody>
             </table>
             
             <button className="cs-secondary-btn-full">Voir le courrier complet</button>
           </div>
         </div>
+        ) : (
+          <div className="cs-preview-column">
+            <div className="flex flex-col items-center justify-center p-12 text-gray-400">
+               <span>Sélectionnez un courrier pour voir l'aperçu</span>
+            </div>
+          </div>
+        )}
         
       </div>
       
@@ -255,7 +280,7 @@ export function CourriersSortantsPage({ variant = 1 }: { variant?: 1 | 2 | 3 }) 
       
       {/* Bottom Fixed Action Bar */}
       <div className="cs-action-bar">
-        <button className="cs-primary-btn"><Plus size={16}/> Nouveau courrier</button>
+        <button className="cs-primary-btn" onClick={() => navigate('/courriers-sortants/nouveau')}><Plus size={16}/> Nouveau courrier</button>
         <button className="cs-action-btn">✏️ Modifier</button>
         <button className="cs-action-btn">📤 Envoyer</button>
         <button className="cs-action-btn">✍️ Signer</button>

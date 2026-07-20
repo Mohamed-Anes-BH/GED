@@ -1,0 +1,65 @@
+/* =============================================
+   NOUVEAU COURRIER SORTANT PAGE
+   Reuses .nce-* base styles — add overrides here
+   ============================================= */
+
+/* step badge color override for sortant */
+.ncs-badge-blue   { background: #3B82F6 !important; }
+.ncs-badge-green  { background: #22C55E !important; }
+.ncs-badge-yellow { background: #F59E0B !important; }
+.ncs-badge-indigo { background: #6366F1 !important; }
+
+/* Sortant hero tint */
+.ncs-hero-img {
+  width: 160px; height: 120px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, rgba(59,130,246,.08) 0%, rgba(99,102,241,.08) 100%);
+  border-radius: 20px;
+  border: 1px solid var(--dash-border);
+  font-size: 60px;
+  position: relative; overflow: hidden;
+}
+.ncs-hero-img::after {
+  content: ''; position: absolute;
+  bottom: -10px; right: -10px;
+  width: 80px; height: 80px;
+  background: rgba(59,130,246,.06);
+  border-radius: 50%;
+}
+
+/* Validation card */
+.ncs-validation-row {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.ncs-radio-group {
+  display: flex; align-items: center; gap: 12px;
+}
+.ncs-radio-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--dash-text); cursor: pointer;
+}
+.ncs-radio-label input { accent-color: #FF6B00; width: 15px; height: 15px; }
+
+/* Send buttons */
+.nce-btn-validate {
+  background: transparent;
+  border: 1px solid #3B82F6; color: #3B82F6;
+  border-radius: 12px; padding: 10px 18px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: 'Poppins', sans-serif;
+  display: flex; align-items: center; gap: 7px;
+  transition: all 200ms;
+}
+.nce-btn-validate:hover { background: rgba(59,130,246,.08); }
+
+.nce-btn-send {
+  background: #FF6B00; color: #fff; border: none;
+  border-radius: 12px; padding: 10px 22px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: 'Poppins', sans-serif;
+  display: flex; align-items: center; gap: 7px;
+  box-shadow: 0 4px 14px rgba(255,107,0,.3);
+  transition: all 200ms;
+}
+.nce-btn-send:hover { background: #E65D00; transform: translateY(-1px); }
+.nce-btn-send:disabled, .nce-btn-validate:disabled { opacity: .6; cursor: not-allowed; transform: none; }

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api/',
+  baseURL: 'http://localhost:8001/api/',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -37,7 +37,7 @@ api.interceptors.response.use(
         }
         
         // Demander un nouveau access_token a l'aide du refresh
-        const { data } = await axios.post('http://localhost:8000/api/auth/token/refresh/', {
+        const { data } = await axios.post('http://localhost:8001/api/auth/token/refresh/', {
           refresh: refreshToken
         });
         

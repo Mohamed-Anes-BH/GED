@@ -1,0 +1,777 @@
+# AgrOdiv GED — Structure Détaillée du Projet
+
+## 1. BACKEND (Django)
+
+### 📁 `.`
+- 📄 **`manage.py`**
+  - Function: `main`
+- 📄 **`seed_db.py`**
+  - Function: `run`
+
+### 📁 `apps`
+- 📄 **`__init__.py`**
+
+### 📁 `apps/workflow`
+- 📄 **`__init__.py`**
+- 📄 **`apps.py`**
+  - Class: `WorkflowConfig` (ready)
+- 📄 **`filters.py`**
+  - Class: `WorkflowFilter` (No methods)
+  - Class: `WorkflowInstanceFilter` (No methods)
+  - Class: `StepExecutionFilter` (No methods)
+- 📄 **`models.py`**
+  - Class: `Workflow` (__str__)
+  - Class: `WorkflowStep` (__str__)
+  - Class: `WorkflowInstance` (__str__)
+  - Class: `StepExecution` (__str__)
+- 📄 **`serializers.py`**
+  - Class: `WorkflowStepSerializer` (No methods)
+  - Class: `WorkflowSerializer` (No methods)
+  - Class: `StepExecutionSerializer` (No methods)
+  - Class: `WorkflowInstanceSerializer` (No methods)
+- 📄 **`services.py`**
+  - Function: `create_instance`
+  - Function: `validate_execution`
+  - Function: `reject_execution`
+  - Function: `advance_instance`
+- 📄 **`signals.py`**
+  - Function: `step_execution_pre_save`
+  - Function: `step_execution_post_save`
+- 📄 **`tests.py`**
+  - Class: `WorkflowServiceTests` (setUp, test_create_validate_and_advance_instance, test_reject_execution_sets_status)
+- 📄 **`urls.py`**
+- 📄 **`views.py`**
+  - Class: `WorkflowViewSet` (perform_create, kpis, stats)
+  - Class: `WorkflowStepViewSet` (No methods)
+  - Class: `WorkflowInstanceViewSet` (No methods)
+  - Class: `StepExecutionViewSet` (validate, reject, start_instance)
+
+### 📁 `apps/messagerie`
+- 📄 **`__init__.py`**
+- 📄 **`admin.py`**
+  - Class: `MessageInline` (No methods)
+  - Class: `ConversationAdmin` (No methods)
+  - Class: `MessageAdmin` (No methods)
+- 📄 **`apps.py`**
+  - Class: `MessagerieConfig` (No methods)
+- 📄 **`models.py`**
+  - Class: `Conversation` (__str__, last_message, unread_count_for)
+  - Class: `Message` (__str__)
+- 📄 **`serializers.py`**
+  - Class: `MessageSerializer` (get_sender_name)
+  - Class: `ConversationSerializer` (get_participant_names)
+- 📄 **`urls.py`**
+- 📄 **`views.py`**
+  - Class: `ConversationViewSet` (get_queryset, perform_create, messages)
+  - Class: `MessageViewSet` (get_queryset, perform_create, mark_read, mark_all_read)
+
+### 📁 `apps/documents`
+- 📄 **`__init__.py`**
+- 📄 **`apps.py`**
+  - Class: `DocumentsConfig` (ready)
+- 📄 **`filters.py`**
+  - Class: `DocumentFilter` (No methods)
+- 📄 **`models.py`**
+  - Class: `Document` (__str__)
+  - Class: `DocumentFile` (__str__)
+  - Class: `DocumentVersion` (__str__)
+  - Class: `DocumentRelation` (No methods)
+  - Class: `Favorite` (No methods)
+- 📄 **`serializers.py`**
+  - Class: `DocumentFileSerializer` (No methods)
+  - Class: `DocumentVersionSerializer` (No methods)
+  - Class: `DocumentRelationSerializer` (No methods)
+  - Class: `DocumentSerializer` (No methods)
+  - Class: `FavoriteSerializer` (No methods)
+- 📄 **`services.py`**
+  - Function: `soft_delete_document`
+  - Function: `restore_document`
+  - Function: `permanently_delete_document`
+  - Function: `add_document_file`
+  - Function: `create_document_version`
+  - Function: `add_favorite`
+  - Function: `remove_favorite`
+  - Function: `notify_document_created`
+  - Function: `empty_trash`
+  - Function: `archive_document`
+  - Function: `share_document`
+- 📄 **`signals.py`**
+  - Function: `document_post_save`
+  - Function: `document_post_delete`
+  - Function: `favorite_post_save`
+- 📄 **`tests.py`**
+  - Class: `DocumentServiceTests` (setUp, test_soft_delete_and_restore_document, test_add_document_file_and_version)
+- 📄 **`urls.py`**
+- 📄 **`views.py`**
+  - Class: `DocumentViewSet` (perform_create, destroy, trash, empty_trash_action, restore, permanent_delete, upload_file, download, preview, versions, restore_version, relations, archive, share, recent)
+  - Class: `FavoriteViewSet` (get_queryset, perform_create, perform_destroy)
+
+### 📁 `apps/organization`
+- 📄 **`__init__.py`**
+- 📄 **`apps.py`**
+  - Class: `OrganizationConfig` (ready)
+- 📄 **`filters.py`**
+- 📄 **`models.py`**
+  - Class: `Direction` (__str__)
+  - Class: `Departement` (__str__)
+  - Class: `Service` (__str__)
+  - Class: `Categorie` (__str__)
+  - Class: `Tag` (__str__)
+  - Class: `Correspondant` (__str__)
+  - Class: `Site` (__str__)
+  - Class: `Batiment` (__str__)
+  - Class: `Bureau` (__str__)
+  - Class: `Armoire` (__str__)
+  - Class: `Etagere` (__str__)
+  - Class: `BoiteArchive` (__str__)
+- 📄 **`serializers.py`**
+  - Class: `DirectionSerializer` (No methods)
+  - Class: `DepartementSerializer` (No methods)
+  - Class: `ServiceSerializer` (No methods)
+  - Class: `CategorieSerializer` (No methods)
+  - Class: `TagSerializer` (No methods)
+  - Class: `CorrespondantSerializer` (No methods)
+  - Class: `SiteSerializer` (No methods)
+  - Class: `BatimentSerializer` (No methods)
+  - Class: `BureauSerializer` (No methods)
+  - Class: `ArmoireSerializer` (No methods)
+  - Class: `EtagereSerializer` (No methods)
+  - Class: `BoiteArchiveSerializer` (No methods)
+- 📄 **`services.py`**
+  - Function: `get_direction_tree`
+  - Function: `get_storage_tree`
+  - Function: `get_archive_capacity_stats`
+  - Function: `cascade_archive_box`
+- 📄 **`signals.py`**
+  - Function: `_log_org_change`
+  - Function: `direction_post_save`
+  - Function: `departement_post_save`
+  - Function: `service_post_save`
+  - Function: `organization_misc_post_save`
+- 📄 **`tests.py`**
+  - Class: `OrganizationSignalTests` (setUp, test_direction_creation_logs_audit)
+- 📄 **`urls.py`**
+- 📄 **`views.py`**
+  - Class: `BaseOrganizationViewSet` (No methods)
+  - Class: `DirectionViewSet` (No methods)
+  - Class: `DepartementViewSet` (No methods)
+  - Class: `ServiceViewSet` (No methods)
+  - Class: `CategorieViewSet` (No methods)
+  - Class: `TagViewSet` (No methods)
+  - Class: `CorrespondantViewSet` (No methods)
+  - Class: `SiteViewSet` (No methods)
+  - Class: `BatimentViewSet` (No methods)
+  - Class: `BureauViewSet` (No methods)
+  - Class: `ArmoireViewSet` (No methods)
+  - Class: `EtagereViewSet` (No methods)
+  - Class: `BoiteArchiveViewSet` (No methods)
+
+### 📁 `apps/notifications`
+- 📄 **`__init__.py`**
+- 📄 **`apps.py`**
+  - Class: `NotificationsConfig` (ready)
+- 📄 **`filters.py`**
+- 📄 **`models.py`**
+  - Class: `Notification` (__str__)
+- 📄 **`serializers.py`**
+  - Class: `NotificationSerializer` (No methods)
+- 📄 **`services.py`**
+  - Function: `create_notification`
+  - Function: `mark_notification_read`
+  - Function: `mark_all_read`
+  - Function: `clear_notifications`
+  - Function: `get_unread_count`
+  - Function: `list_notifications`
+- 📄 **`signals.py`**
+  - Function: `notification_post_save`
+- 📄 **`tests.py`**
+  - Class: `NotificationSignalTests` (setUp, test_notification_creation_logs_audit, test_notification_service_helpers, test_notification_api_endpoints)
+- 📄 **`urls.py`**
+- 📄 **`views.py`**
+  - Class: `NotificationViewSet` (get_queryset, perform_create, mark_all_read, mark_read, unread_count, clear)
+
+### 📁 `apps/common`
+- 📄 **`__init__.py`**
+- 📄 **`constants.py`**
+- 📄 **`exceptions.py`**
+  - Class: `CustomValidationError` (No methods)
+  - Class: `ResourceNotFoundError` (No methods)
+  - Class: `PermissionDeniedError` (No methods)
+- 📄 **`pagination.py`**
+  - Class: `StandardPagination` (No methods)
+  - Class: `LargePagination` (No methods)
+- 📄 **`permissions.py`**
+  - Class: `IsOwner` (has_object_permission)
+  - Class: `IsAdminOrReadOnly` (has_permission)
+  - Class: `HasModulePermission` (has_permission)
+- 📄 **`responses.py`**
+  - Function: `success_response`
+  - Function: `error_response`
+  - Function: `paginated_response`
+- 📄 **`utils.py`**
+  - Function: `get_client_ip`
+  - Function: `file_checksum`
+  - Function: `file_extension`
+- 📄 **`validators.py`**
+  - Function: `validate_file_size`
+  - Function: `validate_file_type`
+  - Function: `validate_reference_number`
+- 📄 **`views.py`**
+  - Function: `global_search`
+  - Function: `search_suggestions`
+
+### 📁 `apps/common/management`
+- 📄 **`__init__.py`**
+
+### 📁 `apps/common/management/commands`
+- 📄 **`__init__.py`**
+- 📄 **`seed.py`**
+  - Class: `Command` (handle, create_roles_and_users, create_organization, create_dossiers, create_tags_and_categories, create_documents, create_courriers)
+
+### 📁 `apps/users`
+- 📄 **`__init__.py`**
+- 📄 **`apps.py`**
+  - Class: `UsersConfig` (ready)
+- 📄 **`filters.py`**
+- 📄 **`models.py`**
+  - Class: `UserManager` (create_user, create_superuser)
+  - Class: `Role` (__str__)
+  - Class: `Permission` (__str__)
+  - Class: `User` (__str__)
+- 📄 **`serializers.py`**
+  - Class: `PermissionSerializer` (No methods)
+  - Class: `RoleSerializer` (No methods)
+  - Class: `UserSerializer` (No methods)
+  - Class: `UserCreateUpdateSerializer` (create, update)
+- 📄 **`services.py`**
+  - Function: `create_user`
+  - Function: `activate_user`
+  - Function: `assign_role`
+  - Function: `create_role_permission`
+  - Function: `notify_admin_user_created`
+- 📄 **`signals.py`**
+  - Function: `user_post_save`
+- 📄 **`tests.py`**
+  - Class: `UserSignalTests` (setUp, test_user_creation_emits_audit_and_admin_notification_if_staff_exists, test_profile_and_activate_endpoints, test_role_permissions_endpoint)
+- 📄 **`urls.py`**
+- 📄 **`views.py`**
+  - Class: `UserViewSet` (get_serializer_class, activate, profile, avatar)
+  - Class: `RoleViewSet` (destroy, permissions)
+
+### 📁 `apps/dashboard`
+- 📄 **`__init__.py`**
+- 📄 **`apps.py`**
+  - Class: `DashboardConfig` (ready)
+- 📄 **`filters.py`**
+- 📄 **`models.py`**
+- 📄 **`serializers.py`**
+- 📄 **`services.py`**
+  - Function: `get_global_kpis`
+  - Function: `get_recent_activity`
+  - Function: `get_recent_documents`
+  - Function: `get_storage_info`
+  - Function: `get_calendar_events`
+  - Function: `get_documents_stats`
+  - Function: `get_courriers_stats`
+  - Function: `get_users_stats`
+  - Function: `get_storage_stats`
+  - Function: `get_evolution_stats`
+  - Function: `get_category_stats`
+  - Function: `get_department_stats`
+  - Function: `export_stats_payload`
+- 📄 **`signals.py`**
+- 📄 **`tests.py`**
+  - Class: `DashboardServiceTests` (setUp, test_get_global_kpis_reflects_seeded_data, test_get_recent_activity_returns_recent_entries)
+- 📄 **`urls.py`**
+- 📄 **`views.py`**
+  - Function: `kpi_global`
+  - Function: `recent_activity`
+  - Function: `recent_documents`
+  - Function: `storage_info`
+  - Function: `calendar_events`
+  - Function: `stats_documents`
+  - Function: `stats_courriers`
+  - Function: `stats_users`
+  - Function: `stats_storage`
+  - Function: `stats_evolution`
+  - Function: `stats_by_category`
+  - Function: `stats_by_department`
+  - Function: `export_stats`
+
+### 📁 `apps/dossiers`
+- 📄 **`__init__.py`**
+- 📄 **`apps.py`**
+  - Class: `DossiersConfig` (No methods)
+- 📄 **`filters.py`**
+- 📄 **`models.py`**
+  - Class: `Dossier` (__str__)
+  - Class: `DossierPermission` (__str__)
+- 📄 **`serializers.py`**
+  - Class: `DossierPermissionSerializer` (No methods)
+  - Class: `DossierSerializer` (No methods)
+- 📄 **`services.py`**
+  - Function: `build_tree`
+  - Function: `get_content`
+  - Function: `log_dossier_action`
+- 📄 **`signals.py`**
+- 📄 **`tests.py`**
+  - Class: `DossierServiceTests` (setUp, test_build_tree_returns_nested_structure, test_get_content_returns_documents_and_children)
+- 📄 **`urls.py`**
+- 📄 **`views.py`**
+  - Class: `DossierViewSet` (get_queryset, perform_create, perform_destroy, trash, restore, permanent, empty_trash, get_object_or_404, content, tree)
+  - Class: `DossierPermissionViewSet` (No methods)
+
+### 📁 `apps/ocr`
+- 📄 **`__init__.py`**
+- 📄 **`apps.py`**
+  - Class: `OcrConfig` (ready)
+- 📄 **`filters.py`**
+- 📄 **`models.py`**
+  - Class: `OcrJob` (__str__)
+  - Class: `OcrResult` (__str__)
+  - Class: `OcrPage` (__str__)
+- 📄 **`serializers.py`**
+  - Class: `OcrResultSerializer` (No methods)
+  - Class: `OcrPageSerializer` (No methods)
+  - Class: `OcrJobSerializer` (No methods)
+- 📄 **`services.py`**
+  - Function: `start_ocr_job`
+  - Function: `finish_ocr_job`
+  - Function: `fail_ocr_job`
+  - Function: `add_ocr_page`
+  - Function: `execute_ocr_job`
+- 📄 **`signals.py`**
+  - Function: `ocr_job_post_save`
+  - Function: `ocr_result_post_save`
+- 📄 **`tasks.py`**
+  - Function: `run_ocr_task`
+- 📄 **`tests.py`**
+  - Class: `OcrServiceTests` (setUp, test_start_and_finish_ocr_job)
+- 📄 **`urls.py`**
+- 📄 **`views.py`**
+  - Class: `OcrJobViewSet` (perform_create, process, retry, stats)
+  - Class: `OcrResultViewSet` (No methods)
+  - Class: `OcrPageViewSet` (No methods)
+
+### 📁 `apps/settings_app`
+- 📄 **`__init__.py`**
+- 📄 **`apps.py`**
+  - Class: `SettingsAppConfig` (ready)
+- 📄 **`filters.py`**
+- 📄 **`models.py`**
+  - Class: `AppSettings` (save, get_settings, __str__)
+  - Class: `BackupRecord` (__str__)
+- 📄 **`serializers.py`**
+  - Class: `AppSettingsSerializer` (No methods)
+  - Class: `BackupRecordSerializer` (No methods)
+- 📄 **`services.py`**
+  - Function: `get_settings`
+  - Function: `update_settings`
+  - Function: `get_about_info`
+  - Function: `get_storage_details`
+  - Function: `create_backup_record`
+  - Function: `trigger_backup`
+  - Function: `list_backups`
+  - Function: `restore_backup`
+- 📄 **`signals.py`**
+  - Function: `app_settings_post_save`
+  - Function: `backup_record_post_save`
+- 📄 **`tests.py`**
+  - Class: `SettingsSignalTests` (test_settings_and_backup_emit_audit_logs)
+- 📄 **`urls.py`**
+- 📄 **`views.py`**
+  - Class: `AppSettingsViewSet` (list, update, about, storage)
+  - Class: `BackupRecordViewSet` (trigger_backup, list_backups, restore)
+
+### 📁 `apps/audit`
+- 📄 **`__init__.py`**
+- 📄 **`apps.py`**
+  - Class: `AuditConfig` (ready)
+- 📄 **`filters.py`**
+- 📄 **`models.py`**
+  - Class: `AuditLog` (__str__)
+- 📄 **`serializers.py`**
+  - Class: `AuditLogSerializer` (No methods)
+- 📄 **`services.py`**
+  - Function: `log_action`
+  - Function: `get_audit_queryset`
+  - Function: `get_audit_stats`
+- 📄 **`signals.py`**
+  - Function: `auditlog_post_save`
+- 📄 **`tests.py`**
+  - Class: `AuditServiceTests` (setUp, test_log_action_and_stats)
+- 📄 **`urls.py`**
+- 📄 **`views.py`**
+  - Class: `AuditLogViewSet` (get_queryset, stats)
+
+### 📁 `apps/authentication`
+- 📄 **`__init__.py`**
+- 📄 **`apps.py`**
+  - Class: `AuthenticationConfig` (ready)
+- 📄 **`filters.py`**
+- 📄 **`models.py`**
+- 📄 **`serializers.py`**
+- 📄 **`services.py`**
+  - Function: `blacklist_refresh_token`
+  - Function: `change_user_password`
+  - Function: `log_login`
+  - Function: `log_logout`
+- 📄 **`signals.py`**
+  - Function: `authentication_user_logged_in`
+  - Function: `authentication_user_logged_out`
+- 📄 **`tests.py`**
+  - Class: `AuthenticationSignalTests` (setUp, test_login_and_logout_emit_audit_logs, test_password_change_and_blacklist_helpers)
+- 📄 **`urls.py`**
+- 📄 **`views.py`**
+  - Function: `logout_user`
+  - Function: `change_password`
+  - Function: `get_current_user`
+
+### 📁 `apps/courriers`
+- 📄 **`__init__.py`**
+- 📄 **`apps.py`**
+  - Class: `CourriersConfig` (ready)
+- 📄 **`filters.py`**
+  - Class: `CourrierEntrantFilter` (No methods)
+  - Class: `CourrierSortantFilter` (No methods)
+- 📄 **`models.py`**
+  - Class: `BaseCourrier` (No methods)
+  - Class: `CourrierEntrant` (__str__)
+  - Class: `CourrierSortant` (__str__)
+  - Class: `PieceJointe` (__str__)
+  - Class: `Diffusion` (__str__)
+  - Class: `DiffusionDestinataire` (__str__)
+  - Class: `CourrierHistorique` (__str__)
+- 📄 **`serializers.py`**
+  - Class: `PieceJointeSerializer` (No methods)
+  - Class: `CourrierHistoriqueSerializer` (No methods)
+  - Class: `CourrierEntrantSerializer` (get_historique, get_pieces_jointes)
+  - Class: `CourrierSortantSerializer` (No methods)
+  - Class: `DiffusionSerializer` (No methods)
+- 📄 **`services.py`**
+  - Function: `_create_history`
+  - Function: `_log_courrier`
+  - Function: `generate_numero_entrant`
+  - Function: `generate_numero_sortant`
+  - Function: `mark_entrant_read`
+  - Function: `_mark_courrier_traite`
+  - Function: `transfer_courrier`
+  - Function: `assign_courrier`
+  - Function: `send_courrier_sortant`
+  - Function: `sign_courrier_sortant`
+  - Function: `archive_courrier_sortant`
+  - Function: `add_attachment`
+  - Function: `delete_attachment`
+  - Function: `create_diffusion`
+  - Function: `get_courriers_kpis`
+- 📄 **`signals.py`**
+  - Function: `courrier_entrant_post_save`
+  - Function: `courrier_sortant_post_save`
+- 📄 **`tests.py`**
+  - Class: `CourrierServiceTests` (setUp, test_mark_entrant_read_changes_status)
+- 📄 **`urls.py`**
+- 📄 **`views.py`**
+  - Class: `CourrierEntrantViewSet` (get_queryset, perform_create, perform_destroy, trash, restore, permanent, mark_read, mark_treated, transfer, assign, history, diffusions, upload_attachment)
+  - Class: `CourrierSortantViewSet` (get_queryset, perform_create, perform_destroy, trash, restore, permanent, send, sign, archive, history, diffusions, upload_attachment)
+  - Class: `DiffusionViewSet` (perform_create, tracking, read)
+  - Class: `PieceJointeViewSet` (download)
+  - Function: `courriers_kpis`
+
+### 📁 `config`
+- 📄 **`__init__.py`**
+- 📄 **`asgi.py`**
+- 📄 **`celery.py`**
+- 📄 **`settings.py`**
+- 📄 **`urls.py`**
+- 📄 **`wsgi.py`**
+
+## 2. FRONTEND (React / TypeScript)
+
+### 📁 `.`
+- 📄 **`App.tsx`**
+  - Function: `withChrome`
+  - Function: `AppShellRoutes`
+  - Function: `DocumentDetailRoute`
+  - Function: `App`
+  - Arrow Function/Hook: `nav`
+  - Arrow Function/Hook: `C`
+- 📄 **`components.tsx`**
+- 📄 **`data.ts`**
+- 📄 **`global.d.ts`**
+- 📄 **`main.tsx`**
+- 📄 **`theme.ts`**
+- 📄 **`vite-env.d.ts`**
+
+### 📁 `context`
+- 📄 **`AuthContext.tsx`**
+  - Arrow Function/Hook: `fetchUser`
+  - Arrow Function/Hook: `login`
+  - Arrow Function/Hook: `logout`
+
+### 📁 `components`
+- 📄 **`ErrorBoundary.tsx`**
+  - Class: `ErrorBoundary`
+
+### 📁 `components/layout`
+- 📄 **`MainLayout.tsx`**
+  - Function: `Badge`
+  - Function: `SidebarNav`
+  - Function: `NavItem`
+  - Function: `AppChrome`
+  - Function: `GlassPanel`
+  - Function: `SectionTitle`
+  - Arrow Function/Hook: `handleClickOutside`
+
+### 📁 `styles`
+- 📄 **`theme.ts`**
+  - Arrow Function/Hook: `glass`
+  - Arrow Function/Hook: `fileColor`
+
+### 📁 `utils`
+- 📄 **`api.ts`**
+- 📄 **`formatters.ts`**
+
+### 📁 `hooks`
+- 📄 **`useCourriers.ts`**
+  - Arrow Function/Hook: `useCourriers`
+- 📄 **`useDashboard.ts`**
+  - Arrow Function/Hook: `useDashboard`
+  - Arrow Function/Hook: `fetchAllData`
+- 📄 **`useDocuments.ts`**
+  - Arrow Function/Hook: `useDocuments`
+  - Arrow Function/Hook: `deleteDocument`
+  - Arrow Function/Hook: `archiveDocument`
+- 📄 **`useDossiers.ts`**
+  - Arrow Function/Hook: `useDossiers`
+  - Arrow Function/Hook: `fetchDossiers`
+- 📄 **`useOrganization.ts`**
+  - Arrow Function/Hook: `useOrganizationCrud`
+  - Arrow Function/Hook: `create`
+  - Arrow Function/Hook: `update`
+  - Arrow Function/Hook: `remove`
+- 📄 **`useSearch.ts`**
+  - Arrow Function/Hook: `useSearch`
+  - Arrow Function/Hook: `search`
+  - Arrow Function/Hook: `suggest`
+- 📄 **`useTrash.ts`**
+  - Arrow Function/Hook: `useTrash`
+  - Arrow Function/Hook: `restoreItem`
+  - Arrow Function/Hook: `permanentDelete`
+  - Arrow Function/Hook: `emptyTrash`
+- 📄 **`useUsers.ts`**
+  - Arrow Function/Hook: `useUsers`
+  - Arrow Function/Hook: `createUser`
+  - Arrow Function/Hook: `updateUser`
+  - Arrow Function/Hook: `deleteUser`
+- 📄 **`useWorkflows.ts`**
+  - Arrow Function/Hook: `useWorkflows`
+  - Arrow Function/Hook: `fetchData`
+  - Arrow Function/Hook: `startInstance`
+  - Arrow Function/Hook: `validateStep`
+  - Arrow Function/Hook: `rejectStep`
+
+### 📁 `pages`
+- 📄 **`AProposPage.tsx`**
+  - Function: `AProposPage`
+- 📄 **`ArchivesPhysiquesPage.tsx`**
+  - Function: `ArchivesPhysiquesPage`
+- 📄 **`AuditLogPage.tsx`**
+  - Function: `HistoriquePage`
+  - Arrow Function/Hook: `fetchData`
+  - Arrow Function/Hook: `TagIcon`
+  - Arrow Function/Hook: `UserIcon`
+  - Arrow Function/Hook: `CalendarIcon`
+- 📄 **`BoitesArchivesPage.tsx`**
+  - Function: `BoitesArchivesPage`
+- 📄 **`CategoriesPage.tsx`**
+  - Function: `CategoriesPage`
+- 📄 **`CorbeillePage.tsx`**
+  - Function: `CorbeillePage`
+- 📄 **`CorrespondantsPage.tsx`**
+  - Function: `CorrespondantsPage`
+- 📄 **`CourriersEntrantsPage.tsx`**
+  - Function: `CourriersEntrantsPage`
+  - Function: `FilterDropdown`
+- 📄 **`CourriersSortantsPage.tsx`**
+  - Function: `CourriersSortantsPage`
+  - Function: `FilterBlock`
+  - Function: `Select`
+- 📄 **`DashboardPage.tsx`**
+  - Function: `DashboardPage`
+  - Arrow Function/Hook: `getDocIconAndStyle`
+- 📄 **`DepartementsPage.tsx`**
+  - Function: `DepartementsPage`
+- 📄 **`DiffusionPage.tsx`**
+  - Function: `DiffusionPage`
+  - Arrow Function/Hook: `handleSubmit`
+- 📄 **`DirectionsPage.tsx`**
+  - Function: `DirectionsPage`
+- 📄 **`DocumentDetailPage.tsx`**
+  - Function: `DocumentDetailPage`
+  - Function: `ActionButton`
+  - Function: `TabItem`
+  - Function: `MetaRow`
+  - Function: `RelationRow`
+  - Function: `FooterInfoRow`
+- 📄 **`DocumentsActifsPage.tsx`**
+  - Function: `DocumentsActifsPage`
+- 📄 **`DocumentsPage.tsx`**
+  - Function: `DocumentsPage`
+  - Function: `FilterDropdown`
+  - Arrow Function/Hook: `getDocIconAndStyle`
+- 📄 **`DocumentsRecentsPage.tsx`**
+  - Function: `DocumentsRecentsPage`
+- 📄 **`FavorisPage.tsx`**
+  - Function: `FavorisPage`
+  - Function: `FilterSel`
+  - Function: `FavRow`
+- 📄 **`GestionDossiersPage.tsx`**
+  - Function: `GestionDossiersPage`
+  - Function: `KpiCard`
+  - Function: `FolderNode`
+  - Function: `FileNode`
+  - Function: `TableRow`
+  - Function: `LegendItem`
+  - Function: `RecentDoc`
+  - Function: `UserPerm`
+  - Function: `TimelineItem`
+  - Function: `FavoriteDoc`
+  - Arrow Function/Hook: `toggleFolder`
+- 📄 **`HistoriqueVersionsPage.tsx`**
+  - Function: `HistoriqueVersionsPage`
+- 📄 **`LoginPage.tsx`**
+  - Function: `LoginPage`
+  - Arrow Function/Hook: `handleSubmit`
+- 📄 **`MessageriePage.tsx`**
+  - Function: `MessageriePage`
+  - Function: `FolderItem`
+  - Function: `ChatListItem`
+  - Function: `Btn`
+  - Function: `RtfBtn`
+  - Function: `InfoRow`
+  - Function: `Participant`
+  - Function: `HistItem`
+  - Function: `SharedDoc`
+  - Function: `BtmBtn`
+- 📄 **`NotFoundPage.tsx`**
+  - Function: `NotFoundPage`
+- 📄 **`NotificationsPage.tsx`**
+  - Function: `NotificationsPage`
+  - Function: `NotifGroup`
+  - Function: `NotifItem`
+  - Arrow Function/Hook: `fetchData`
+  - Arrow Function/Hook: `handleMarkRead`
+  - Arrow Function/Hook: `handleMarkAllRead`
+  - Arrow Function/Hook: `handleClear`
+- 📄 **`OcrPage.tsx`**
+  - Function: `OcrPage`
+  - Function: `IconBtn`
+  - Function: `RtfBtn`
+  - Arrow Function/Hook: `fetchJobs`
+  - Arrow Function/Hook: `fetchDocuments`
+  - Arrow Function/Hook: `loadJobDetails`
+  - Arrow Function/Hook: `handleStartOcr`
+  - Arrow Function/Hook: `handleRetry`
+  - Arrow Function/Hook: `handleCopyText`
+  - Arrow Function/Hook: `handleDownloadText`
+- 📄 **`ProfilPage.tsx`**
+  - Function: `ProfilPage`
+  - Function: `Toggle`
+  - Arrow Function/Hook: `handleSave`
+  - Arrow Function/Hook: `EditIcon`
+  - Arrow Function/Hook: `MoonIcon`
+  - Arrow Function/Hook: `BellIcon`
+  - Arrow Function/Hook: `ChromeIcon`
+  - Arrow Function/Hook: `FirefoxIcon`
+  - Arrow Function/Hook: `SafariIcon`
+- 📄 **`RolesPermissionsPage.tsx`**
+  - Function: `RolesPermissionsPage`
+  - Function: `Toggle2`
+  - Arrow Function/Hook: `fetchRoles`
+  - Arrow Function/Hook: `fetchPermissions`
+  - Arrow Function/Hook: `handleToggle`
+  - Arrow Function/Hook: `handleSave`
+  - Arrow Function/Hook: `handleCreateRole`
+  - Arrow Function/Hook: `handleDeleteRole`
+  - Arrow Function/Hook: `UsersIcon`
+  - Arrow Function/Hook: `EyeIcon`
+  - Arrow Function/Hook: `PencilIcon`
+  - Arrow Function/Hook: `Trash2Icon`
+  - Arrow Function/Hook: `DownloadIcon`
+  - Arrow Function/Hook: `ShareIcon`
+  - Arrow Function/Hook: `CheckCircleIcon`
+  - Arrow Function/Hook: `InfoIcon`
+- 📄 **`ScannerPage.tsx`**
+  - Function: `ScannerPage`
+  - Function: `SectionPanel`
+  - Function: `SegmentControl`
+  - Function: `ToolBtn`
+  - Function: `Thumbnail`
+  - Function: `InfoRow`
+  - Function: `SelectField`
+  - Function: `Tag`
+- 📄 **`SearchPage.tsx`**
+  - Function: `SearchPage`
+  - Function: `FilterField`
+  - Function: `FilterSelect`
+  - Function: `FilterSegment`
+  - Function: `StatBox`
+  - Function: `ViewBtn`
+  - Function: `ResultRow`
+  - Function: `BottomPanel`
+  - Function: `SearchItem`
+  - Function: `SuggestionTag`
+  - Arrow Function/Hook: `Highlight`
+- 📄 **`ServicesPage.tsx`**
+  - Function: `ServicesPage`
+- 📄 **`SettingsPage.tsx`**
+  - Function: `SettingsPage`
+  - Arrow Function/Hook: `fetchData`
+  - Arrow Function/Hook: `handleBackup`
+  - Arrow Function/Hook: `handleSave`
+- 📄 **`StatistiquesPage.tsx`**
+  - Function: `StatistiquesPage`
+- 📄 **`TagsPage.tsx`**
+  - Function: `TagsPage`
+- 📄 **`UploadPage.tsx`**
+  - Function: `NouveauDocumentPage`
+- 📄 **`UsersPage.tsx`**
+  - Function: `UtilisateursPage`
+  - Function: `Toggle`
+  - Arrow Function/Hook: `resetForm`
+  - Arrow Function/Hook: `handleCreateUser`
+  - Arrow Function/Hook: `handleDeleteUser`
+  - Arrow Function/Hook: `FolderPlusIcon`
+- 📄 **`VisionneusePdfPage.tsx`**
+  - Function: `VisionneusePdfPage`
+- 📄 **`WorkflowPage.tsx`**
+  - Function: `WorkflowPage`
+  - Function: `KpiBox`
+  - Function: `WfRow`
+  - Function: `WfNode`
+  - Function: `ArrowDown`
+  - Function: `Field`
+  - Function: `ToggleRow`
+  - Function: `ProgressStep`
+  - Function: `NotifRow`
+  - Function: `MetaRow`
+  - Function: `HistItem`
+  - Function: `UsedDoc`
+
+### 📁 `services`
+- 📄 **`audit.ts`**
+- 📄 **`courriers.ts`**
+- 📄 **`dashboard.ts`**
+- 📄 **`documents.ts`**
+- 📄 **`dossiers.ts`**
+- 📄 **`notifications.ts`**
+- 📄 **`ocr.ts`**
+- 📄 **`organization.ts`**
+  - Arrow Function/Hook: `createCrudService`
+- 📄 **`settings.ts`**
+- 📄 **`users.ts`**
+- 📄 **`workflows.ts`**
+
+### 📁 `types`
+- 📄 **`index.ts`**
+

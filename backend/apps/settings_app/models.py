@@ -1,11 +1,26 @@
 from django.db import models
 
 class AppSettings(models.Model):
+    LANGUAGE_CHOICES = [
+        ('fr', 'Français'),
+        ('en', 'English'),
+        ('ar', 'العربية'),
+    ]
+    THEME_CHOICES = [
+        ('clair', 'Clair'),
+        ('sombre', 'Sombre'),
+    ]
+    DATE_FORMAT_CHOICES = [
+        ('DD/MM/YYYY', 'DD/MM/YYYY'),
+    ]
+
     app_name = models.CharField(max_length=100, default="AgrOdiv GED")
     logo = models.CharField(max_length=500, null=True, blank=True)
     primary_color = models.CharField(max_length=7, default="#F59E0B")
-    language = models.CharField(max_length=5, default="fr")
+    language = models.CharField(max_length=5, choices=LANGUAGE_CHOICES, default="fr")
     timezone = models.CharField(max_length=50, default="Africa/Algiers")
+    theme = models.CharField(max_length=10, choices=THEME_CHOICES, default="clair")
+    date_format = models.CharField(max_length=20, choices=DATE_FORMAT_CHOICES, default="DD/MM/YYYY")
     
     storage_limit = models.BigIntegerField(default=10737418240) # 10 GB
     max_upload_size = models.IntegerField(default=52428800) # 50 MB

@@ -9,7 +9,14 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-agrodiv-ged-dev-key-c
 
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '*'] # "*" is added temporarily for docker dev
+if not DEBUG and SECRET_KEY == 'django-insecure-agrodiv-ged-dev-key-change-in-production':
+    raise ValueError("Le SECRET_KEY de production doit être configuré de manière sécurisée via variables d'environnement.")
+
+ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS')
+if ALLOWED_HOSTS_ENV:
+    ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_ENV.split(',')]
+else:
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '*'] if DEBUG else []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -21,21 +28,24 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'django_filters',
+    'channels',
     # AgrOdiv Apps
     'apps.common',
-    'apps.authentication',
-    'apps.users',
-    'apps.organization',
-    'apps.documents',
-    'apps.dossiers',
-    'apps.courriers',
-    'apps.workflow',
-    'apps.ocr',
-    'apps.notifications',
-    'apps.audit',
-    'apps.dashboard',
-    'apps.settings_app',
+    'apps.authentication.apps.AuthenticationConfig',
+    'apps.users.apps.UsersConfig',
+    'apps.organization.apps.OrganizationConfig',
+    'apps.documents.apps.DocumentsConfig',
+    'apps.dossiers.apps.DossiersConfig',
+    'apps.courriers.apps.CourriersConfig',
+    'apps.workflow.apps.WorkflowConfig',
+    'apps.ocr.apps.OcrConfig',
+    'apps.notifications.apps.NotificationsConfig',
+    'apps.audit.apps.AuditConfig',
+    'apps.dashboard.apps.DashboardConfig',
+    'apps.settings_app.apps.SettingsAppConfig',
+    'apps.messagerie.apps.MessagerieConfig',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +64,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -67,6 +77,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -90,6 +101,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -108,11 +120,45 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
 }
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=12),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
 }
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52_428_800  # 50 MB
+
+# Celery Configurations
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://redis:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
+# Email Configuration
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'noreply@agrodiv.dz')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD', '')
+DEFAULT_FROM_EMAIL = 'AgrOdiv GED <noreply@agrodiv.dz>'
+
+# Django Channels — Redis channel layer
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [os.environ.get('REDIS_URL', 'redis://redis:6379/1')],
+        },
+    },
+}

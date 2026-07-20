@@ -95,7 +95,7 @@ class Command(BaseCommand):
 
     def create_documents(self):
         docs_data = [
-            ("Contrat de prestation Cloud", self.cat_contrat, "active"),
+            ("Contrat de prestation Cloud", self.cat_contrat, "brouillon"),
             ("Rapport Annuel 2023", self.cat_rapport, "valide"),
             ("Facture Fournisseur X", self.cat_finance, "en_revision"),
             ("Procédure de sécurité", self.cat_rapport, "valide"),
@@ -127,7 +127,7 @@ class Command(BaseCommand):
                 'expediteur': "Ministère de l'Agriculture",
                 'objet': "Réglementation sur les subventions",
                 'date_reception': timezone.now().date() - timedelta(days=2),
-                'statut': "non_lu",
+                'statut': "nouveau",
                 'priorite': "haute",
                 'created_by': self.users[0]
             }

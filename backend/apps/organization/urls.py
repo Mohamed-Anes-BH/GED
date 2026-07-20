@@ -4,7 +4,8 @@ from .views import (
     DirectionViewSet, DepartementViewSet, ServiceViewSet,
     CategorieViewSet, TagViewSet, CorrespondantViewSet,
     SiteViewSet, BatimentViewSet, BureauViewSet,
-    ArmoireViewSet, EtagereViewSet, BoiteArchiveViewSet
+    ArmoireViewSet, EtagereViewSet, BoiteArchiveViewSet,
+    PhysicalLocationViewSet
 )
 
 app_name = 'organization'
@@ -22,6 +23,7 @@ router.register(r'bureaux', BureauViewSet, basename='bureau')
 router.register(r'armoires', ArmoireViewSet, basename='armoire')
 router.register(r'etageres', EtagereViewSet, basename='etagere')
 router.register(r'boites-archives', BoiteArchiveViewSet, basename='boitearchive')
+router.register(r'physical-locations', PhysicalLocationViewSet, basename='physicallocation')
 
 urlpatterns = [
     path('', include(router.urls)),

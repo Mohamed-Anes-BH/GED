@@ -1,29 +1,20 @@
 import { useState } from 'react';
 import {
-  Folder, FileText, Send, Clock, Archive, List, LayoutGrid, ChevronDown, 
+  Folder, FileText, Send, Clock, Archive, List, LayoutGrid, ChevronDown,
   Search, SlidersHorizontal, Eye, Download, MoreVertical, Plus,
   User, Calendar, Star, Share2, AlertCircle, Settings
 } from 'lucide-react';
 import '../styles/documents.css';
+import { useDocuments } from '../hooks/useDocuments';
+import { formatDate, formatSize, getStatusColor } from '../utils/formatters';
+import { Document } from '../types';
 
-/* ─── MOCK DATA ──────────────────────────────────────────── */
 const kpis = [
-  { label: 'Tous les documents', value: '5,248', delta: '+12% ce mois', color: '#FACC15', icon: Folder },
-  { label: 'Documents actifs', value: '3,842', delta: '+8% ce mois', color: '#22C55E', icon: FileText },
-  { label: 'Diffusés', value: '956', delta: '+6% ce mois', color: '#FF6B00', icon: Send },
-  { label: 'En attente', value: '320', delta: '-3% ce mois', color: '#F59E0B', icon: Clock, trendDown: true },
-  { label: 'Archives', value: '130', delta: '+4% ce mois', color: '#94A3B8', icon: Archive },
-];
-
-const documents = [
-  { id: '1', nom: 'Contrat_prestation_2024.pdf', favori: true, type: 'pdf', dossier: 'Contrats', categorie: 'Contrats', statut: 'Actif', ajoutPar: 'Sofiane Hamidi', date: '12/05/2024 10:45', taille: '2.4 Mo' },
-  { id: '2', nom: 'Rapport_activite_T1_2024.docx', favori: false, type: 'doc', dossier: 'Rapports', categorie: 'Rapports', statut: 'Diffusé', ajoutPar: 'Imane B.', date: '11/05/2024 14:22', taille: '1.1 Mo' },
-  { id: '3', nom: 'Courrier_Ministere_0456.pdf', favori: false, type: 'pdf', dossier: 'Courriers entrants', categorie: 'Administratif', statut: 'En attente', ajoutPar: 'Yacine M.', date: '11/05/2024 09:15', taille: '856 Ko' },
-  { id: '4', nom: 'Liste_fournisseurs_2024.xlsx', favori: false, type: 'xls', dossier: 'Fournisseurs', categorie: 'Fournisseurs', statut: 'Actif', ajoutPar: 'Sofiane Hamidi', date: '10/05/2024 16:30', taille: '320 Ko' },
-  { id: '5', nom: 'Note_interne_0324.pdf', favori: false, type: 'pdf', dossier: 'Notes internes', categorie: 'Interne', statut: 'Diffusé', ajoutPar: 'Imane B.', date: '09/05/2024 11:05', taille: '512 Ko' },
-  { id: '6', nom: 'Guide_procedure_GED.pdf', favori: false, type: 'pdf', dossier: 'Procédures', categorie: 'Procédures', statut: 'Actif', ajoutPar: 'Sofiane Hamidi', date: '08/05/2024 15:42', taille: '3.7 Mo' },
-  { id: '7', nom: 'PV_reunion_comite.docx', favori: false, type: 'doc', dossier: 'Réunions', categorie: 'Réunions', statut: 'En attente', ajoutPar: 'Yacine M.', date: '07/05/2024 10:20', taille: '1.5 Mo' },
-  { id: '8', nom: 'Facture_2024_1205.pdf', favori: false, type: 'pdf', dossier: 'Factures', categorie: 'Finance', statut: 'Actif', ajoutPar: 'Imane B.', date: '06/05/2024 09:10', taille: '989 Ko' },
+  { label: 'Tous les documents', color: '#FACC15', icon: Folder },
+  { label: 'Documents actifs', color: '#22C55E', icon: FileText },
+  { label: 'En révision', color: '#3B82F6', icon: Send },
+  { label: 'Brouillons', color: '#F59E0B', icon: Clock },
+  { label: 'Archives', color: '#94A3B8', icon: Archive },
 ];
 
 const categoryStyles: Record<string, { color: string; border: string }> = {
@@ -37,21 +28,33 @@ const categoryStyles: Record<string, { color: string; border: string }> = {
   Finance:       { color: '#10B981', border: '#A7F3D0' },
 };
 
-const statutStyles: Record<string, string> = {
-  'Actif':      '#22C55E',
-  'Diffusé':    '#FF6B00',
-  'En attente': '#FACC15',
-};
-
-const typeIcons: Record<string, { bg: string; color: string; label: string }> = {
-  pdf: { bg: '#FEE2E2', color: '#EF4444', label: 'PDF' },
-  doc: { bg: '#DBEAFE', color: '#3B82F6', label: 'W' },
-  xls: { bg: '#DCFCE7', color: '#22C55E', label: 'X' },
-};
-
 /* ─── COMPONENT ──────────────────────────────────────────── */
-export function DocumentsPage({ onOpenDocument, onNavigate }: { onOpenDocument: (id: number) => void; onNavigate: (page: string) => void }) {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+export function DocumentsPage({ onOpenDocument, onNavigate, initialFilters = {} }: { onOpenDocument: (id: number) => void; onNavigate: (page: string) => void; initialFilters?: any }) {
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const { documents, loading, totalCount, deleteDocument, archiveDocument, toggleFavorite } = useDocuments(initialFilters);
+
+  const getDocIconAndStyle = (fileName: string = '') => {
+    const ext = fileName.split('.').pop()?.toLowerCase();
+    if (ext === 'pdf') return { bg: '#FEE2E2', color: '#EF4444', label: 'PDF' };
+    if (['doc', 'docx'].includes(ext || '')) return { bg: '#DBEAFE', color: '#3B82F6', label: 'W' };
+    if (['xls', 'xlsx'].includes(ext || '')) return { bg: '#DCFCE7', color: '#22C55E', label: 'X' };
+    return { bg: '#F3F4F6', color: '#6B7280', label: 'TXT' };
+  };
+
+  const kpisData = [
+    documents.length,
+    documents.filter(d => ['actif', 'valide'].includes((d.status || '').toLowerCase())).length,
+    documents.filter(d => (d.status || '').toLowerCase() === 'en_revision').length,
+    documents.filter(d => (d.status || '').toLowerCase() === 'brouillon').length,
+    documents.filter(d => (d.status || '').toLowerCase() === 'archive').length,
+  ];
+
+  const recentCount = documents.filter(d => new Date().getTime() - new Date(d.created_at).getTime() < 7 * 24 * 3600 * 1000).length;
+  
+  const totalStorageBytes = documents.reduce((acc, doc) => {
+    return acc + (doc.files && doc.files.length > 0 ? doc.files[0].size : 0);
+  }, 0);
+  const usedStorageGB = (totalStorageBytes / (1024 * 1024 * 1024)).toFixed(4);
 
   return (
     <div className="doc-page">
@@ -63,7 +66,17 @@ export function DocumentsPage({ onOpenDocument, onNavigate }: { onOpenDocument: 
 
       {/* KPIs */}
       <div className="doc-kpi-row">
-        {kpis.map((kpi, i) => {
+        {/* We reuse the KPI layout and fill the first box with real Total */}
+        <div className="doc-kpi-card">
+          <div className="doc-kpi-icon" style={{ background: `${kpis[0].color}1A`, color: kpis[0].color }}>
+            <Folder size={22} />
+          </div>
+          <div className="doc-kpi-info">
+            <span className="doc-kpi-label">{kpis[0].label}</span>
+            <strong className="doc-kpi-value">{kpisData[0]}</strong>
+          </div>
+        </div>
+        {kpis.slice(1).map((kpi, i) => {
           const Icon = kpi.icon;
           return (
             <div key={i} className="doc-kpi-card">
@@ -72,10 +85,7 @@ export function DocumentsPage({ onOpenDocument, onNavigate }: { onOpenDocument: 
               </div>
               <div className="doc-kpi-info">
                 <span className="doc-kpi-label">{kpi.label}</span>
-                <strong className="doc-kpi-value">{kpi.value}</strong>
-                <span className="doc-kpi-delta" style={{ color: kpi.trendDown ? '#EF4444' : '#22C55E' }}>
-                  {kpi.trendDown ? '↓' : '↑'} {kpi.delta}
-                </span>
+                <strong className="doc-kpi-value">{kpisData[i + 1]}</strong>
               </div>
             </div>
           );
@@ -109,20 +119,22 @@ export function DocumentsPage({ onOpenDocument, onNavigate }: { onOpenDocument: 
                 <tr>
                   <th style={{ width: 40 }}><input type="checkbox" /></th>
                   <th>Nom du document</th>
-                  <th>Dossier</th>
+                  <th>ID</th>
                   <th>Catégorie</th>
                   <th>Statut</th>
-                  <th>Ajouté par</th>
                   <th>Date</th>
                   <th>Taille</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {documents.map(doc => {
-                  const catStyle = categoryStyles[doc.categorie] || { color: '#64748B', border: '#CBD5E1' };
-                  const stColor = statutStyles[doc.statut];
-                  const typeIcon = typeIcons[doc.type];
+                {documents.map((doc: Document) => {
+                  const catName = typeof doc.category === 'object' ? (doc.category as any)?.name : 'Catégorie';
+                  const catStyle = categoryStyles[catName] || { color: '#64748B', border: '#CBD5E1' };
+                  
+                  const fileStr = doc.files && doc.files.length > 0 ? doc.files[0].filename : 'document.pdf';
+                  const fileSize = doc.files && doc.files.length > 0 ? doc.files[0].size : null;
+                  const typeIcon = getDocIconAndStyle(fileStr);
 
                   return (
                     <tr 
@@ -136,38 +148,33 @@ export function DocumentsPage({ onOpenDocument, onNavigate }: { onOpenDocument: 
                           <span className="doc-type-icon" style={{ background: typeIcon.bg, color: typeIcon.color }}>
                             {typeIcon.label}
                           </span>
-                          <span className="doc-name">{doc.nom}</span>
-                          {doc.favori && <Star size={12} fill="#FACC15" color="#FACC15" />}
+                          <span className="doc-name font-medium">{doc.title}</span>
                         </div>
                       </td>
-                      <td>{doc.dossier}</td>
+                      <td>DOC-{String(doc.id).padStart(4, '0')}</td>
                       <td>
                         <span className="doc-cat-badge" style={{ color: catStyle.color, borderColor: catStyle.border }}>
-                          {doc.categorie}
+                          {catName}
                         </span>
                       </td>
                       <td>
-                        <span className="doc-statut">
-                          <span className="doc-dot" style={{ background: stColor }} />
-                          {doc.statut}
+                         <span className={`px-2 py-1 rounded-full text-xs capitalize ${getStatusColor(doc.status)}`}>
+                          {doc.status}
                         </span>
-                      </td>
-                      <td>
-                        <div className="doc-user-cell">
-                          <img src={`https://ui-avatars.com/api/?name=${doc.ajoutPar.replace(' ', '+')}&background=random`} alt="" />
-                          <span>{doc.ajoutPar}</span>
-                        </div>
                       </td>
                       <td className="doc-date-cell">
-                        {doc.date.split(' ')[0]}<br/>
-                        <small>{doc.date.split(' ')[1]}</small>
+                        {formatDate(doc.created_at).split(' à ')[0]}<br/>
+                        <small>{formatDate(doc.created_at).split(' à ')[1]}</small>
                       </td>
-                      <td>{doc.taille}</td>
+                      <td>{formatSize(fileSize)}</td>
                       <td>
                         <div className="doc-actions">
+                          <button title="Favori" onClick={(e) => { e.stopPropagation(); toggleFavorite(doc.id); }}>
+                            <Star size={16} className={doc.is_favorite ? "text-yellow-500 fill-current" : "text-gray-400"} />
+                          </button>
                           <button title="Voir" onClick={(e) => { e.stopPropagation(); onOpenDocument(Number(doc.id)); }}><Eye size={16} /></button>
-                          <button title="Télécharger"><Download size={16} /></button>
-                          <button title="Plus"><MoreVertical size={16} /></button>
+                          <button title="Archiver" onClick={(e) => { e.stopPropagation(); archiveDocument(doc.id); }}><Archive size={16} /></button>
+                          <button title="Options"><MoreVertical size={16} /></button>
                         </div>
                       </td>
                     </tr>
@@ -177,17 +184,11 @@ export function DocumentsPage({ onOpenDocument, onNavigate }: { onOpenDocument: 
             </table>
 
             <div className="doc-pagination">
-              <span>Affichage 1 à 10 sur 5,248 résultats</span>
+              <span>Affichage 1 à {documents.length} sur {totalCount} résultats</span>
               <div className="doc-pager">
                 <button>«</button>
                 <button>‹</button>
                 <button className="active">1</button>
-                <button>2</button>
-                <button>3</button>
-                <button>4</button>
-                <button>5</button>
-                <span>...</span>
-                <button>525</button>
                 <button>›</button>
                 <button>»</button>
               </div>
@@ -215,16 +216,13 @@ export function DocumentsPage({ onOpenDocument, onNavigate }: { onOpenDocument: 
                 <User size={16} className="doc-qf-icon" /> Mes documents
               </button>
               <button className="doc-qf-btn">
-                <Clock size={16} className="doc-qf-icon" /> Récemment ajoutés <span className="doc-qf-count">24</span>
+                <Clock size={16} className="doc-qf-icon" /> Récemment ajoutés <span className="doc-qf-count">{recentCount}</span>
               </button>
               <button className="doc-qf-btn">
-                <Star size={16} className="doc-qf-icon" /> Favoris <span className="doc-qf-count">15</span>
+                <Star size={16} className="doc-qf-icon" /> Favoris <span className="doc-qf-count">0</span>
               </button>
               <button className="doc-qf-btn">
-                <Share2 size={16} className="doc-qf-icon" /> Documents partagés
-              </button>
-              <button className="doc-qf-btn">
-                <AlertCircle size={16} className="doc-qf-icon" /> Documents expirés <span className="doc-qf-count">7</span>
+                <AlertCircle size={16} className="doc-qf-icon" /> Documents expirés <span className="doc-qf-count">0</span>
               </button>
             </div>
           </div>
@@ -235,7 +233,6 @@ export function DocumentsPage({ onOpenDocument, onNavigate }: { onOpenDocument: 
             </div>
             
             <div className="doc-storage-chart">
-              {/* Custom Donut Chart implementation representing exactly the design */}
               <div className="doc-donut-wrap">
                 <svg viewBox="0 0 100 100" className="doc-donut">
                   <circle cx="50" cy="50" r="40" fill="transparent" stroke="var(--dash-border)" strokeWidth="12" />
@@ -249,8 +246,8 @@ export function DocumentsPage({ onOpenDocument, onNavigate }: { onOpenDocument: 
             </div>
 
             <div className="doc-storage-stats">
-              <div className="doc-s-row"><span>Utilisé</span><strong>340 Go</strong></div>
-              <div className="doc-s-row"><span>Disponible</span><strong>160 Go</strong></div>
+              <div className="doc-s-row"><span>Utilisé</span><strong>{usedStorageGB === '0.0000' ? '< 0.01' : usedStorageGB} Go</strong></div>
+              <div className="doc-s-row"><span>Disponible</span><strong>{(500 - parseFloat(usedStorageGB)).toFixed(2)} Go</strong></div>
               <div className="doc-s-row total"><span>Total</span><strong>500 Go</strong></div>
             </div>
 

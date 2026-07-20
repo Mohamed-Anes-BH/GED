@@ -6,14 +6,11 @@ User = settings.AUTH_USER_MODEL
 
 class Document(models.Model):
     STATUS_CHOICES = [
+        ('actif', 'Actif'),
         ('brouillon', 'Brouillon'),
-        ('en_revision', 'En révision'),
-        ('valide', 'Validé'),
         ('archive', 'Archivé'),
-        ('rejete', 'Rejeté'),
     ]
     PRIORITY_CHOICES = [
-        ('basse', 'Basse'),
         ('normale', 'Normale'),
         ('haute', 'Haute'),
         ('urgente', 'Urgente'),
@@ -29,14 +26,27 @@ class Document(models.Model):
     # string reference to avoid circular dependency since dossiers is not yet created
     dossier = models.ForeignKey('dossiers.Dossier', on_delete=models.SET_NULL, null=True, blank=True)
     
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='brouillon')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='actif')
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='normale')
+    
+    CONFIDENTIALITE_CHOICES = [
+        ('public', 'Public'),
+        ('interne', 'Interne'),
+        ('confidentiel', 'Confidentiel'),
+        ('secret', 'Secret'),
+    ]
+    confidentialite = models.CharField(max_length=20, choices=CONFIDENTIALITE_CHOICES, default='interne')
     
     is_archived = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True, blank=True)
     
-    physical_location = models.CharField(max_length=500, null=True, blank=True)
+    # FK to PhysicalLocation (shared with courriers)
+    physical_location = models.OneToOneField(
+        'courriers.PhysicalLocation', on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='document',
+        verbose_name="Emplacement physique"
+    )
     boite_archive = models.ForeignKey(BoiteArchive, on_delete=models.SET_NULL, null=True, blank=True)
     
     tags = models.ManyToManyField(Tag, blank=True)
@@ -90,8 +100,45 @@ class DocumentRelation(models.Model):
 
 class Favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')
-    document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='favorited_by')
+    document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='favorited_by', null=True, blank=True)
+    folder = models.ForeignKey('dossiers.Dossier', on_delete=models.CASCADE, related_name='favorited_by', null=True, blank=True)
+    incoming_mail = models.ForeignKey('courriers.CourrierEntrant', on_delete=models.CASCADE, related_name='favorited_by', null=True, blank=True)
+    outgoing_mail = models.ForeignKey('courriers.CourrierSortant', on_delete=models.CASCADE, related_name='favorited_by', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        unique_together = ('user', 'document')
+    def __str__(self):
+        if self.document:
+            return f"Favori Doc: {self.document.title}"
+        if self.folder:
+            return f"Favori Dossier: {self.folder.name}"
+        if self.incoming_mail:
+            return f"Favori Courrier Entrant: {self.incoming_mail.objet}"
+        if self.outgoing_mail:
+            return f"Favori Courrier Sortant: {self.outgoing_mail.objet}"
+        return f"Favori #{self.id}"
+
+class ScanJob(models.Model):
+    document = models.OneToOneField(Document, on_delete=models.CASCADE, related_name='scan_job')
+    scanner_name = models.CharField(max_length=255, default='Unknown Scanner')
+    dpi = models.IntegerField(default=300)
+    color_mode = models.CharField(max_length=50)
+    paper_size = models.CharField(max_length=50)
+    duplex = models.BooleanField(default=False)
+    format = models.CharField(max_length=50, default='PDF')
+    scan_status = models.CharField(max_length=50, default='completed')
+    ocr_status = models.CharField(max_length=50, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+class ScannedPage(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='scanned_pages')
+    scan_job = models.ForeignKey(ScanJob, on_delete=models.CASCADE, related_name='pages')
+    page_number = models.IntegerField()
+    image = models.FileField(upload_to='scans/pages/')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class OCRResult(models.Model):
+    document = models.OneToOneField(Document, on_delete=models.CASCADE, related_name='ocr_result')
+    extracted_text = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=50, default='completed')
+    completed_at = models.DateTimeField(auto_now_add=True)

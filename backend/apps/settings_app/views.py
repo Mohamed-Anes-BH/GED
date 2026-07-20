@@ -5,24 +5,29 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from .models import AppSettings, BackupRecord
 from .serializers import AppSettingsSerializer, BackupRecordSerializer
+from .services import get_settings, update_settings, trigger_backup, list_backups, get_about_info, get_storage_details, restore_backup
 
 class AppSettingsViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
     def list(self, request):
-        settings = AppSettings.get_settings()
-        serializer = AppSettingsSerializer(settings)
+        serializer = AppSettingsSerializer(get_settings())
         return Response(serializer.data)
 
     def update(self, request, pk=None):
         if not request.user.is_staff:
             return Response({'detail': 'Accès refusé.'}, status=status.HTTP_403_FORBIDDEN)
-            
-        settings = AppSettings.get_settings()
-        serializer = AppSettingsSerializer(settings, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        settings = update_settings(request.data)
+        serializer = AppSettingsSerializer(settings)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def about(self, request):
+        return Response(get_about_info())
+
+    @action(detail=False, methods=['get'])
+    def storage(self, request):
+        return Response(get_storage_details())
 
 
 class BackupRecordViewSet(viewsets.ReadOnlyModelViewSet):
@@ -32,12 +37,16 @@ class BackupRecordViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=False, methods=['post'])
     def trigger_backup(self, request):
-        # Simulation d'un déclenchement de backup
-        # Ici on utiliserait une tâche Celery
-        BackupRecord.objects.create(
-            filename="manual_backup_simulated.zip",
-            size=1024,
-            type="manual",
-            status="completed"
-        )
-        return Response({"status": "Sauvegarde déclenchée avec succès."})
+        backup = trigger_backup()
+        return Response(BackupRecordSerializer(backup).data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['get'])
+    def list_backups(self, request):
+        serializer = BackupRecordSerializer(list_backups(), many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def restore(self, request, pk=None):
+        backup = self.get_object()
+        restore_backup(backup)
+        return Response(BackupRecordSerializer(backup).data)

@@ -18,8 +18,13 @@ class Workflow(models.Model):
         ('global', 'Global'),
     ]
 
+    TYPE_CHOICES = [
+        ('simple', 'Validation simple'),
+        ('hierarchique', 'Validation hiérarchique'),
+    ]
     name = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
+    workflow_type = models.CharField(max_length=30, choices=TYPE_CHOICES, default='simple', verbose_name="Type de workflow")
     document_type = models.CharField(max_length=50, null=True, blank=True)
     departement = models.ForeignKey(Departement, on_delete=models.SET_NULL, null=True, blank=True)
     responsable = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='workflows_responsable')
@@ -89,8 +94,12 @@ class StepExecution(models.Model):
     STATUS_CHOICES = [
         ('en_attente', 'En attente'),
         ('valide', 'Validé'),
-        ('rejete', 'Rejeté'),
-        ('expire', 'Expiré'),
+        ('refuse', 'Refusé'),
+    ]
+    ACTION_CHOICES = [
+        ('valider', 'Valider'),
+        ('refuser', 'Refuser'),
+        ('retourner', 'Retourner'),
     ]
 
     instance = models.ForeignKey(WorkflowInstance, on_delete=models.CASCADE, related_name='executions')
@@ -98,6 +107,7 @@ class StepExecution(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='en_attente')
+    action_taken = models.CharField(max_length=20, choices=ACTION_CHOICES, null=True, blank=True, verbose_name="Action")
     comment = models.TextField(null=True, blank=True)
     
     started_at = models.DateTimeField(auto_now_add=True)

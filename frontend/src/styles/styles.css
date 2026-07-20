@@ -3278,3 +3278,14 @@ button {
 .back-btn:hover {
   color: var(--dash-text);
 }
+
+/* Custom Scrollbar - Hidden Visuals but keeps scrolling */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+  display: none !important;
+}
+.custom-scrollbar {
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
+}
